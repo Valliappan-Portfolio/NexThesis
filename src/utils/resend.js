@@ -1,0 +1,303 @@
+// Resend Email Integration
+
+const RESEND_API_KEY = process.env.REACT_APP_RESEND_API_KEY || 're_GXtTz3u1_LJknyz8HMVAnoLWbWcuX3YQ6';
+const RESEND_API_URL = 'https://api.resend.com';
+
+/**
+ * Send confirmation email to student
+ */
+export async function sendStudentConfirmationEmail(details) {
+  const {
+    studentEmail,
+    studentName,
+    professionalName,
+    professionalCompany,
+    meetingLink,
+    scheduledDate,
+    scheduledTime,
+    duration = 30,
+    thesisTopic,
+    timezone
+  } = details;
+
+  const emailHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+    .button { display: inline-block; background: #667eea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+    .info-box { background: white; padding: 20px; border-left: 4px solid #667eea; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 Interview Confirmed!</h1>
+    </div>
+    <div class="content">
+      <p>Hi ${studentName},</p>
+
+      <p>Great news! Your interview request has been confirmed.</p>
+
+      <div class="info-box">
+        <h3>📅 Interview Details</h3>
+        <p><strong>Professional:</strong> ${professionalName}</p>
+        <p><strong>Company:</strong> ${professionalCompany}</p>
+        <p><strong>Date:</strong> ${scheduledDate}</p>
+        <p><strong>Time:</strong> ${scheduledTime} (${timezone})</p>
+        <p><strong>Duration:</strong> ${duration} minutes</p>
+        ${thesisTopic ? `<p><strong>Your Thesis Topic:</strong> ${thesisTopic}</p>` : ''}
+      </div>
+
+      <div style="text-align: center;">
+        <a href="${meetingLink}" class="button">Join Meeting</a>
+      </div>
+
+      <div class="info-box">
+        <h3>💡 Tips for a Successful Interview</h3>
+        <ul>
+          <li>Join 5 minutes early to test your audio and video</li>
+          <li>Prepare your questions in advance</li>
+          <li>Have a notebook ready to take notes</li>
+          <li>Find a quiet space with good lighting</li>
+        </ul>
+      </div>
+
+      <p><strong>Meeting Link:</strong><br>
+      <a href="${meetingLink}">${meetingLink}</a></p>
+
+      <p>The meeting will be automatically recorded for your reference.</p>
+
+      <div class="footer">
+        <p>Questions? Reply to this email or contact us at support@nexthesis.com</p>
+        <p>NexThesis - Connecting Students with Industry Experts</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  return sendEmail({
+    to: studentEmail,
+    subject: `Interview Confirmed with ${professionalName} - ${scheduledDate}`,
+    html: emailHtml
+  });
+}
+
+/**
+ * Send confirmation email to professional
+ */
+export async function sendProfessionalConfirmationEmail(details) {
+  const {
+    professionalEmail,
+    professionalName,
+    studentName,
+    studentUniversity,
+    studentThesisTopic,
+    meetingLink,
+    scheduledDate,
+    scheduledTime,
+    duration = 30,
+    timezone
+  } = details;
+
+  const emailHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+    .button { display: inline-block; background: #667eea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+    .info-box { background: white; padding: 20px; border-left: 4px solid #667eea; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>☕ Interview Scheduled</h1>
+    </div>
+    <div class="content">
+      <p>Hi ${professionalName},</p>
+
+      <p>You have an interview scheduled with a student researcher.</p>
+
+      <div class="info-box">
+        <h3>📋 Student Details</h3>
+        <p><strong>Name:</strong> ${studentName}</p>
+        <p><strong>University:</strong> ${studentUniversity || 'Not specified'}</p>
+        ${studentThesisTopic ? `<p><strong>Thesis Topic:</strong> ${studentThesisTopic}</p>` : ''}
+      </div>
+
+      <div class="info-box">
+        <h3>📅 Meeting Details</h3>
+        <p><strong>Date:</strong> ${scheduledDate}</p>
+        <p><strong>Time:</strong> ${scheduledTime} (${timezone})</p>
+        <p><strong>Duration:</strong> ${duration} minutes</p>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="${meetingLink}" class="button">Join Meeting</a>
+      </div>
+
+      <p><strong>Meeting Link:</strong><br>
+      <a href="${meetingLink}">${meetingLink}</a></p>
+
+      <p>The meeting will be automatically recorded. Payment will be processed after the interview is completed.</p>
+
+      <div class="footer">
+        <p>Questions? Reply to this email or contact us at support@nexthesis.com</p>
+        <p>Thank you for supporting student researchers!</p>
+        <p>NexThesis - Connecting Students with Industry Experts</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  return sendEmail({
+    to: professionalEmail,
+    subject: `Interview Scheduled with ${studentName} - ${scheduledDate}`,
+    html: emailHtml
+  });
+}
+
+/**
+ * Send payment confirmation email
+ */
+export async function sendPaymentConfirmationEmail(details) {
+  const {
+    studentEmail,
+    studentName,
+    bundleName,
+    amount,
+    interviewsPurchased,
+    creditsAvailable
+  } = details;
+
+  const emailHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+    .success-badge { background: #10b981; color: white; padding: 5px 15px; border-radius: 20px; display: inline-block; margin: 10px 0; }
+    .info-box { background: white; padding: 20px; border-left: 4px solid #10b981; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>✅ Payment Successful!</h1>
+    </div>
+    <div class="content">
+      <p>Hi ${studentName},</p>
+
+      <p>Thank you for your purchase! Your interview credits are now available.</p>
+
+      <div class="info-box">
+        <h3>💳 Purchase Details</h3>
+        <p><strong>Package:</strong> ${bundleName}</p>
+        <p><strong>Amount Paid:</strong> €${amount}</p>
+        <p><strong>Interviews Included:</strong> ${interviewsPurchased}</p>
+        <span class="success-badge">Payment Confirmed</span>
+      </div>
+
+      <div class="info-box">
+        <h3>📊 Your Credit Balance</h3>
+        <p style="font-size: 24px; font-weight: bold; color: #10b981; margin: 10px 0;">
+          ${creditsAvailable} interview${creditsAvailable !== 1 ? 's' : ''} available
+        </p>
+        <p>You can now browse experts and request interviews!</p>
+      </div>
+
+      <div class="footer">
+        <p>Receipt and invoice will be sent separately.</p>
+        <p>Questions? Contact us at support@nexthesis.com</p>
+        <p>NexThesis - Connecting Students with Industry Experts</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  return sendEmail({
+    to: studentEmail,
+    subject: `Payment Confirmed - ${interviewsPurchased} Interview Credits Added`,
+    html: emailHtml
+  });
+}
+
+/**
+ * Core email sending function using Resend API
+ */
+async function sendEmail({ to, subject, html }) {
+  try {
+    console.log('📧 Attempting to send email...');
+    console.log('   To:', to);
+    console.log('   Subject:', subject);
+
+    // Use Resend's test domain for development
+    // For production: verify your domain at https://resend.com/domains
+    const fromEmail = 'onboarding@resend.dev'; // Resend's test domain
+
+    const emailPayload = {
+      from: fromEmail,
+      to: [to],
+      subject: subject,
+      html: html
+    };
+
+    console.log('   From:', fromEmail);
+
+    const response = await fetch(`${RESEND_API_URL}/emails`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${RESEND_API_KEY}`
+      },
+      body: JSON.stringify(emailPayload)
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      console.error('❌ Resend API error:', responseData);
+      console.error('   Status:', response.status);
+      console.error('   Error details:', JSON.stringify(responseData, null, 2));
+      throw new Error(responseData.message || 'Failed to send email');
+    }
+
+    console.log('✅ Email sent successfully!');
+    console.log('   Message ID:', responseData.id);
+
+    return {
+      success: true,
+      messageId: responseData.id
+    };
+  } catch (error) {
+    console.error('❌ Error sending email:', error.message);
+    console.error('   Full error:', error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+export { sendEmail };

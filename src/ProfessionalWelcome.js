@@ -16,8 +16,6 @@ const ProfessionalWelcome = () => {
         const data = JSON.parse(stored);
         if (data.type === 'professional') {
           setUserData(data);
-          // In a real app, you'd fetch this from your API
-          // For now, we'll simulate with localStorage or show placeholder
           loadRequestStatus(data.email);
         } else {
           // Not a professional, redirect to home
@@ -32,18 +30,41 @@ const ProfessionalWelcome = () => {
   }, []);
 
   const loadRequestStatus = async (email) => {
-    // In a real implementation, you'd fetch from your API
-    // For now, we'll check if there's stored request data
     try {
-      const storedRequests = localStorage.getItem(`nexthesis_requests_${email}`);
-      if (storedRequests) {
-        setRequests(JSON.parse(storedRequests));
-      } else {
-        // Default empty state
-        setRequests({ pending: 0, approved: 0, declined: 0 });
+      console.log('Loading request stats for:', email);
+
+      // Fetch from Supabase
+      const response = await fetch(
+        `https://bpupukmduvbzyywbcngj.supabase.co/rest/v1/interview_requests?professional_email=eq.${encodeURIComponent(email)}&select=status`,
+        {
+          headers: {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw'
+          }
+        }
+      );
+
+      const data = await response.json();
+      console.log('Fetched request data:', data);
+
+      if (Array.isArray(data)) {
+        // Calculate stats from the data
+        const pending = data.filter(r => r.status === 'pending').length;
+        const approved = data.filter(r => r.status === 'confirmed' || r.status === 'approved').length;
+        const declined = data.filter(r => r.status === 'declined').length;
+
+        console.log('Calculated stats:', { pending, approved, declined });
+
+        setRequests({
+          pending,
+          approved,
+          declined
+        });
       }
     } catch (e) {
       console.error('Error loading request status:', e);
+      // Keep default 0s on error
+      setRequests({ pending: 0, approved: 0, declined: 0 });
     }
   };
 
@@ -68,7 +89,7 @@ const ProfessionalWelcome = () => {
       <nav className="fixed top-0 w-full bg-black/50 backdrop-blur-xl border-b border-white/10 z-50">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg"></div>
+            <img src="/logo.png" alt="NexThesis" className="w-8 h-8" />
             <span className="text-xl font-bold">NexThesis</span>
           </a>
           <div className="flex gap-4 items-center">
@@ -156,7 +177,7 @@ const ProfessionalWelcome = () => {
           {/* Quick Actions */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             <a
-              href="/professional/requests"
+              href="/professional/dashboard"
               className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-xl border-2 border-blue-500/50 rounded-2xl p-8 hover:border-blue-500 transition-all block"
             >
               <div className="flex items-start gap-4">
@@ -164,12 +185,12 @@ const ProfessionalWelcome = () => {
                   <CheckCircle className="w-6 h-6 text-blue-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">Review Requests</h3>
+                  <h3 className="text-xl font-bold mb-2">Interview Requests Dashboard</h3>
                   <p className="text-gray-400 text-sm mb-4">
                     View and respond to interview requests from students. Confirm, propose alternatives, or decline.
                   </p>
                   <div className="flex items-center gap-2 text-blue-400 font-semibold text-sm">
-                    View Requests
+                    View Dashboard
                     <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>

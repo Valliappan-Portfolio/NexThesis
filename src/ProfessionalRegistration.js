@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, CheckCircle, Coffee, Home } from 'lucide-react';
+import { ArrowRight, Coffee, Home } from 'lucide-react';
 
 const ProfessionalRegistration = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -15,9 +15,9 @@ const ProfessionalRegistration = () => {
     bio: '',
     bookingLink: '',
     languages: '',
-    dayPreference: '',
-    timePreference: [],
-    timezone: '',
+    availableDays: ['weekend'], // Default: weekend
+    availableTimes: ['afternoon'], // Default: afternoon
+    timezone: 'IST', // Default: IST
     sessionLength: '30'
   });
   const [errors, setErrors] = useState({});
@@ -112,8 +112,8 @@ const ProfessionalRegistration = () => {
 
     if (!formData.languages.trim()) newErrors.languages = 'At least one language is required';
 
-    if (!formData.dayPreference) newErrors.dayPreference = 'Day preference is required';
-    if (!formData.timePreference || formData.timePreference.length === 0) newErrors.timePreference = 'At least one time preference is required';
+    if (!formData.availableDays || formData.availableDays.length === 0) newErrors.availableDays = 'At least one day preference is required';
+    if (!formData.availableTimes || formData.availableTimes.length === 0) newErrors.availableTimes = 'At least one time preference is required';
     if (!formData.timezone.trim()) newErrors.timezone = 'Timezone is required';
     if (!formData.sessionLength) newErrors.sessionLength = 'Session length is required';
 
@@ -160,36 +160,47 @@ const ProfessionalRegistration = () => {
           return;
         }
 
+        const requestBody = {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          linkedin_url: formData.linkedin,
+          company: formData.company,
+          role: formData.role,
+          sector: formData.sector,
+          years_experience: parseInt(formData.experience) || 0,
+          bio: formData.bio,
+          booking_link: formData.bookingLink || null,
+          languages: formData.languages,
+          availability: {
+            days: formData.availableDays,
+            times: formData.availableTimes,
+            timezone: formData.timezone
+          },
+          session_length: parseInt(formData.sessionLength) || 30,
+          verified: false
+        };
+
+        console.log('Sending to Supabase:', requestBody);
+
         const response = await fetch('https://bpupukmduvbzyywbcngj.supabase.co/rest/v1/professionals', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw',
             'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw',
-            'Prefer': 'return=minimal'
+            'Prefer': 'return=representation'
           },
-          body: JSON.stringify({
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            email: formData.email,
-            linkedin_url: formData.linkedin,
-            company: formData.company,
-            role: formData.role,
-            sector: formData.sector,
-            years_experience: parseInt(formData.experience) || 0,
-            bio: formData.bio,
-            booking_link: formData.bookingLink || '',
-            languages: formData.languages,
-            day_preference: formData.dayPreference,
-            time_preference: Array.isArray(formData.timePreference) ? formData.timePreference.join(',') : '',
-            timezone: formData.timezone,
-            session_length: parseInt(formData.sessionLength) || 30,
-            verified: false
-          })
+          body: JSON.stringify(requestBody)
         });
 
+        const responseData = await response.json();
+        console.log('Supabase response:', responseData);
+
         if (!response.ok) {
-          throw new Error('Failed to save');
+          console.error('Supabase error:', responseData);
+          const errorMessage = responseData.message || responseData.hint || 'Failed to save registration';
+          throw new Error(errorMessage);
         }
 
         // Save professional info to browser
@@ -207,8 +218,11 @@ setSubmitted(true);
         // #region agent log
         fetch('http://127.0.0.1:7242/ingest/88699142-527f-44b9-9504-d1b4c088232e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ProfessionalRegistration.js:catch',message:'Error in handleSubmit',data:{errorMessage:error.message,timePreference:formData.timePreference,isArray:Array.isArray(formData.timePreference)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
         // #endregion
-        alert('Error saving registration. Please try again.');
         console.error('Error:', error);
+        const errorMsg = error.message || 'Error saving registration. Please try again.';
+        alert(errorMsg);
+        // Show the error in the form as well
+        setErrors({ general: errorMsg });
       }
     }
   };
@@ -218,9 +232,12 @@ setSubmitted(true);
     if (errors[field]) {
       setErrors({ ...errors, [field]: '' });
     }
-    // Clear timePreference error if at least one is selected
-    if (field === 'timePreference' && Array.isArray(value) && value.length > 0 && errors.timePreference) {
-      setErrors({ ...errors, timePreference: '' });
+    // Clear availability errors if at least one is selected
+    if (field === 'availableTimes' && Array.isArray(value) && value.length > 0 && errors.availableTimes) {
+      setErrors({ ...errors, availableTimes: '' });
+    }
+    if (field === 'availableDays' && Array.isArray(value) && value.length > 0 && errors.availableDays) {
+      setErrors({ ...errors, availableDays: '' });
     }
   };
 
@@ -543,50 +560,61 @@ setSubmitted(true);
               </div>
 
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6 mt-6">
-                <h3 className="text-lg font-bold mb-4 text-blue-300">Availability Settings *</h3>
-                <p className="text-sm text-gray-400 mb-6">Define when you're available for interviews</p>
+                <h3 className="text-lg font-bold mb-4 text-blue-300">📅 Availability Settings *</h3>
+                <p className="text-sm text-gray-400 mb-6">Set your general availability preferences</p>
 
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium mb-3 text-gray-300">Day Preference *</label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {['Weekday', 'Weekend', 'Both'].map(option => (
-                        <button
-                          key={option}
-                          type="button"
-                          onClick={() => handleChange('dayPreference', option.toLowerCase())}
-                          className={`px-4 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
-                            formData.dayPreference === option.toLowerCase()
-                              ? 'border-blue-500 bg-blue-500/20 text-white'
-                              : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:bg-white/10'
-                          }`}
-                        >
-                          {option}
-                        </button>
-                      ))}
+                    <label className="block text-sm font-medium mb-3 text-gray-300">When are you available? * (Select all that apply)</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { value: 'weekday', label: 'Weekdays', desc: 'Mon-Fri' },
+                        { value: 'weekend', label: 'Weekends', desc: 'Sat-Sun' }
+                      ].map(option => {
+                        const isSelected = formData.availableDays.includes(option.value);
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => {
+                              const newDays = isSelected
+                                ? formData.availableDays.filter(d => d !== option.value)
+                                : [...formData.availableDays, option.value];
+                              handleChange('availableDays', newDays);
+                            }}
+                            className={`px-4 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                              isSelected
+                                ? 'border-blue-500 bg-blue-500/20 text-white'
+                                : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:bg-white/10'
+                            }`}
+                          >
+                            <div className="font-bold">{option.label}</div>
+                            <div className="text-xs text-gray-400">{option.desc}</div>
+                          </button>
+                        );
+                      })}
                     </div>
-                    {errors.dayPreference && <p className="text-red-400 text-xs mt-1">{errors.dayPreference}</p>}
+                    {errors.availableDays && <p className="text-red-400 text-xs mt-1">{errors.availableDays}</p>}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-3 text-gray-300">Time Preference * (Select all that apply)</label>
+                    <label className="block text-sm font-medium mb-3 text-gray-300">Preferred Time Windows * (Select all that apply)</label>
                     <div className="grid grid-cols-3 gap-3">
-                      {['Morning', 'Afternoon', 'Evening'].map(option => {
-                        // #region agent log
-                        const timePrefCheck = Array.isArray(formData.timePreference);
-                        if (!timePrefCheck) fetch('http://127.0.0.1:7242/ingest/88699142-527f-44b9-9504-d1b4c088232e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ProfessionalRegistration.js:562',message:'timePreference is not array',data:{timePreference:formData.timePreference,type:typeof formData.timePreference},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-                        // #endregion
-                        const isSelected = timePrefCheck && formData.timePreference.includes(option.toLowerCase());
+                      {[
+                        { value: 'morning', label: 'Morning', time: '9am-12pm' },
+                        { value: 'afternoon', label: 'Afternoon', time: '12pm-5pm' },
+                        { value: 'evening', label: 'Evening', time: '5pm-8pm' }
+                      ].map(option => {
+                        const isSelected = formData.availableTimes.includes(option.value);
                         return (
                           <button
-                            key={option}
+                            key={option.value}
                             type="button"
                             onClick={() => {
-                              const currentPrefs = Array.isArray(formData.timePreference) ? formData.timePreference : [];
-                              const newPrefs = isSelected
-                                ? currentPrefs.filter(p => p !== option.toLowerCase())
-                                : [...currentPrefs, option.toLowerCase()];
-                              handleChange('timePreference', newPrefs);
+                              const newTimes = isSelected
+                                ? formData.availableTimes.filter(t => t !== option.value)
+                                : [...formData.availableTimes, option.value];
+                              handleChange('availableTimes', newTimes);
                             }}
                             className={`px-4 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
                               isSelected
@@ -594,17 +622,18 @@ setSubmitted(true);
                                 : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:bg-white/10'
                             }`}
                           >
-                            {option}
+                            <div className="font-bold">{option.label}</div>
+                            <div className="text-xs text-gray-400">{option.time}</div>
                           </button>
                         );
                       })}
                     </div>
-                    {errors.timePreference && <p className="text-red-400 text-xs mt-1">{errors.timePreference}</p>}
+                    {errors.availableTimes && <p className="text-red-400 text-xs mt-1">{errors.availableTimes}</p>}
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-300">Timezone *</label>
+                      <label className="block text-sm font-medium mb-2 text-gray-300">Your Timezone *</label>
                       <select
                         value={formData.timezone}
                         onChange={(e) => handleChange('timezone', e.target.value)}
@@ -612,22 +641,18 @@ setSubmitted(true);
                           errors.timezone ? 'border-red-500' : 'border-white/20 focus:border-blue-500'
                         }`}
                       >
-                        <option value="" className="bg-gray-900">Select timezone</option>
-                        <option value="UTC" className="bg-gray-900">UTC</option>
-                        <option value="Europe/London" className="bg-gray-900">Europe/London (GMT)</option>
-                        <option value="Europe/Paris" className="bg-gray-900">Europe/Paris (CET)</option>
-                        <option value="Europe/Madrid" className="bg-gray-900">Europe/Madrid (CET)</option>
-                        <option value="America/New_York" className="bg-gray-900">America/New_York (EST)</option>
-                        <option value="America/Los_Angeles" className="bg-gray-900">America/Los_Angeles (PST)</option>
-                        <option value="Asia/Dubai" className="bg-gray-900">Asia/Dubai (GST)</option>
-                        <option value="Asia/Singapore" className="bg-gray-900">Asia/Singapore (SGT)</option>
-                        <option value="Asia/Tokyo" className="bg-gray-900">Asia/Tokyo (JST)</option>
+                        <option value="IST" className="bg-gray-900">IST (India)</option>
+                        <option value="CET" className="bg-gray-900">CET (Central Europe)</option>
+                        <option value="EST" className="bg-gray-900">EST (US East)</option>
+                        <option value="PST" className="bg-gray-900">PST (US West)</option>
+                        <option value="GMT" className="bg-gray-900">GMT (UK)</option>
+                        <option value="SGT" className="bg-gray-900">SGT (Singapore)</option>
                       </select>
                       {errors.timezone && <p className="text-red-400 text-xs mt-1">{errors.timezone}</p>}
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-300">Session Length (minutes) *</label>
+                      <label className="block text-sm font-medium mb-2 text-gray-300">Session Length *</label>
                       <select
                         value={formData.sessionLength}
                         onChange={(e) => handleChange('sessionLength', e.target.value)}
@@ -642,8 +667,20 @@ setSubmitted(true);
                       {errors.sessionLength && <p className="text-red-400 text-xs mt-1">{errors.sessionLength}</p>}
                     </div>
                   </div>
+
+                  <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3">
+                    <p className="text-xs text-gray-400">
+                      💡 Students will see your availability and can request specific times within these windows
+                    </p>
+                  </div>
                 </div>
               </div>
+
+              {errors.general && (
+                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+                  <p className="text-red-400 text-sm">{errors.general}</p>
+                </div>
+              )}
 
               <button
                 onClick={handleSubmit}

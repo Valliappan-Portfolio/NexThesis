@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { ArrowRight, CheckCircle, Filter, X, ArrowLeft } from 'lucide-react';
+import { ArrowRight, CheckCircle, Filter, X } from 'lucide-react';
 import InterviewRequest from './InterviewRequest';
 
 
@@ -460,6 +460,42 @@ const BrowseExpertsPage = () => {
                   <p className="font-bold text-xl">{selectedExpert.languages || 'N/A'}</p>
                 </div>
               </div>
+
+              {selectedExpert.availability && (
+                <div className="bg-gradient-to-br from-green-500/10 to-blue-500/10 border border-green-500/30 rounded-xl p-6">
+                  <h3 className="text-lg font-semibold text-green-300 mb-4 flex items-center gap-2">
+                    📅 Availability
+                  </h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <span className="text-gray-400 text-sm block mb-2">Days</span>
+                      <div className="flex flex-wrap gap-2">
+                        {(selectedExpert.availability.days || []).map(day => (
+                          <span key={day} className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-300 rounded-lg text-xs font-medium capitalize">
+                            {day === 'weekday' ? 'Mon-Fri' : 'Sat-Sun'}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 text-sm block mb-2">Time Windows</span>
+                      <div className="flex flex-wrap gap-2">
+                        {(selectedExpert.availability.times || []).map(time => (
+                          <span key={time} className="px-3 py-1 bg-purple-500/20 border border-purple-500/30 text-purple-300 rounded-lg text-xs font-medium capitalize">
+                            {time === 'morning' ? '9am-12pm' : time === 'afternoon' ? '12pm-5pm' : '5pm-8pm'}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 text-sm block mb-2">Timezone</span>
+                      <span className="px-3 py-1 bg-green-500/20 border border-green-500/30 text-green-300 rounded-lg text-xs font-medium">
+                        {selectedExpert.availability.timezone || 'IST'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {selectedExpert.linkedin_url && (
                 <div>

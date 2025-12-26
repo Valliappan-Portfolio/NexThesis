@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, X, Clock, Calendar, Mail, ArrowRight, Home } from 'lucide-react';
+import { CheckCircle, X, Clock, Calendar, ArrowRight, Home } from 'lucide-react';
 
 const ProfessionalRequests = () => {
   const [requests, setRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [declineReason, setDeclineReason] = useState('');
+  const [showDeclineDialog, setShowDeclineDialog] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('nexthesis_user');
@@ -46,43 +48,47 @@ const ProfessionalRequests = () => {
     setSelectedRequest(null);
   };
 
-  const handleProposeAlternative = (request) => {
-    // Simple alternative proposal - in real app would have a form
-    const alternative = prompt('Propose alternative time (e.g., "Next Monday, 2 PM"):');
-    if (alternative) {
-      const updated = requests.map(r => 
-        r.id === request.id ? { ...r, status: 'alternative_proposed', alternativeTime: alternative } : r
-      );
-      setRequests(updated);
-      localStorage.setItem(`interview_requests_${userData.email}`, JSON.stringify(updated));
-      alert('Alternative time proposed to student.');
-      setSelectedRequest(null);
-    }
+  // const handleProposeAlternative = (request) => {
+  //   // Simple alternative proposal - in real app would have a form
+  //   const alternative = prompt('Propose alternative time (e.g., "Next Monday, 2 PM"):');
+  //   if (alternative) {
+  //     const updated = requests.map(r =>
+  //       r.id === request.id ? { ...r, status: 'alternative_proposed', alternativeTime: alternative } : r
+  //     );
+  //     setRequests(updated);
+  //     localStorage.setItem(`interview_requests_${userData.email}`, JSON.stringify(updated));
+  //     alert('Alternative time proposed to student.');
+  //     setSelectedRequest(null);
+  //   }
+  // };
+
+  const handleDecline = async (request, reason) => {
+    const updated = requests.map(r =>
+      r.id === request.id ? { ...r, status: 'declined', decline_reason: reason } : r
+    );
+    setRequests(updated);
+    localStorage.setItem(`interview_requests_${userData.email}`, JSON.stringify(updated));
+
+    // In a real app, update Supabase with decline_reason
+    // await updateRequestInSupabase(request.id, { status: 'declined', decline_reason: reason });
+
+    setShowDeclineDialog(false);
+    setSelectedRequest(null);
+    setDeclineReason('');
   };
 
-  const handleDecline = (request) => {
-    if (confirm('Are you sure you want to decline this request?')) {
-      const updated = requests.map(r => 
-        r.id === request.id ? { ...r, status: 'declined' } : r
-      );
-      setRequests(updated);
-      localStorage.setItem(`interview_requests_${userData.email}`, JSON.stringify(updated));
-      setSelectedRequest(null);
-    }
-  };
-
-  const matchAvailability = (request, professional) => {
-    // Simple matching logic
-    const studentDay = request.student_day_preference;
-    const studentTime = request.student_time_preference;
-    const proDay = professional.day_preference || '';
-    const proTime = professional.time_preference || '';
-
-    const dayMatch = proDay === 'both' || proDay === studentDay || studentDay === 'both';
-    const timeMatch = proTime.includes(studentTime) || proTime === '';
-
-    return dayMatch && timeMatch;
-  };
+  // const matchAvailability = (request, professional) => {
+  //   // Simple matching logic
+  //   const studentDay = request.student_day_preference;
+  //   const studentTime = request.student_time_preference;
+  //   const proDay = professional.day_preference || '';
+  //   const proTime = professional.time_preference || '';
+  //
+  //   const dayMatch = proDay === 'both' || proDay === studentDay || studentDay === 'both';
+  //   const timeMatch = proTime.includes(studentTime) || proTime === '';
+  //
+  //   return dayMatch && timeMatch;
+  // };
 
   if (!userData) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">Loading...</div>;
@@ -168,10 +174,14 @@ const ProfessionalRequests = () => {
                     <p className="text-gray-400 mb-2">From: {request.student_email}</p>
                     <div className="flex gap-4 text-sm text-gray-400">
                       <span>Plan: {request.pricing_tier_name} (€{request.price})</span>
-                      <span>•</span>
-                      <span>Day: {request.student_day_preference}</span>
-                      <span>•</span>
-                      <span>Time: {request.student_time_preference}</span>
+                      {request.preferred_date && (
+                        <>
+                          <span>•</span>
+                          <span>📅 {new Date(request.preferred_date).toLocaleDateString()}</span>
+                          <span>•</span>
+                          <span>🕐 {request.preferred_time}</span>
+                        </>
+                      )}
                     </div>
                   </div>
                   <ArrowRight className="w-5 h-5 text-gray-400" />
@@ -202,18 +212,25 @@ const ProfessionalRequests = () => {
                   <label className="text-sm text-gray-400">Pricing Plan</label>
                   <p className="text-white font-medium">{selectedRequest.pricing_tier_name} - €{selectedRequest.price}</p>
                 </div>
-                <div>
-                  <label className="text-sm text-gray-400">Preferred Day</label>
-                  <p className="text-white font-medium capitalize">{selectedRequest.student_day_preference}</p>
-                </div>
-                <div>
-                  <label className="text-sm text-gray-400">Preferred Time</label>
-                  <p className="text-white font-medium capitalize">{selectedRequest.student_time_preference}</p>
-                </div>
-                <div>
-                  <label className="text-sm text-gray-400">Student Timezone</label>
-                  <p className="text-white font-medium">{selectedRequest.student_timezone}</p>
-                </div>
+                {selectedRequest.preferred_date && (
+                  <>
+                    <div>
+                      <label className="text-sm text-gray-400">Preferred Date</label>
+                      <p className="text-white font-medium">
+                        📅 {new Date(selectedRequest.preferred_date).toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-sm text-gray-400">Preferred Time</label>
+                      <p className="text-white font-medium">🕐 {selectedRequest.preferred_time}</p>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
@@ -231,26 +248,58 @@ const ProfessionalRequests = () => {
                   Confirm
                 </button>
                 <button
-                  onClick={() => handleProposeAlternative(selectedRequest)}
-                  className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
-                >
-                  <Calendar className="w-5 h-5" />
-                  Propose Alternative
-                </button>
-                <button
-                  onClick={() => handleDecline(selectedRequest)}
-                  className="px-6 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 text-red-400 rounded-xl font-semibold transition-all"
+                  onClick={() => setShowDeclineDialog(true)}
+                  className="px-6 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 text-red-400 rounded-xl font-semibold transition-all flex items-center gap-2"
                 >
                   <X className="w-5 h-5" />
+                  Decline
                 </button>
               </div>
             </div>
           </div>
         )}
+
+        {showDeclineDialog && selectedRequest && (
+          <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] flex items-center justify-center p-6" onClick={() => setShowDeclineDialog(false)}>
+            <div className="bg-gradient-to-br from-gray-900 to-black border border-red-500/30 rounded-3xl max-w-lg w-full p-8" onClick={(e) => e.stopPropagation()}>
+              <h3 className="text-2xl font-bold mb-4 text-red-400">Decline Interview Request</h3>
+              <p className="text-gray-400 mb-6">
+                Please provide a reason for declining. This will be shared with the student so they understand.
+              </p>
+
+              <textarea
+                value={declineReason}
+                onChange={(e) => setDeclineReason(e.target.value)}
+                placeholder="e.g., Schedule conflict, Outside my expertise area, Too busy this month..."
+                rows={4}
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-red-500 transition-all resize-none mb-6"
+              />
+
+              <div className="flex gap-4">
+                <button
+                  onClick={() => {
+                    setShowDeclineDialog(false);
+                    setDeclineReason('');
+                  }}
+                  className="flex-1 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-semibold transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDecline(selectedRequest, declineReason)}
+                  disabled={!declineReason.trim()}
+                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-500 disabled:bg-red-600/50 disabled:cursor-not-allowed rounded-xl font-semibold transition-all"
+                >
+                  Decline Request
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default ProfessionalRequests;
-

@@ -1,103 +1,139 @@
-import React, { useState } from 'react';
-import { ArrowRight, X, CheckCircle, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowRight, X, Sparkles, CreditCard } from 'lucide-react';
+import { getAvailableCredits } from './utils/creditSystem';
+
+// Pricing tiers defined outside component to avoid re-creation
+const pricingTiers = [
+  { id: 'espresso', name: 'Espresso Shot', price: 8, interviews: 1, emoji: '☕' },
+  { id: 'starter', name: 'Research Starter', price: 20, interviews: 2, emoji: '📝', popular: true },
+  { id: 'deepdive', name: 'Deep Dive', price: 32, interviews: 4, emoji: '🔍' },
+  { id: 'complete', name: 'Thesis Complete', price: 60, interviews: 6, emoji: '🎓' }
+];
 
 const InterviewRequest = ({ expert, onClose, onComplete }) => {
-  // Guard against missing expert
+  const [step, setStep] = useState(1); // 1: pricing selection, 2: date/time selection
+  const [selectedTier, setSelectedTier] = useState(null);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [dateError, setDateError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [credits, setCredits] = useState(null);
+  const [loadingCredits, setLoadingCredits] = useState(true);
+
+  // Load credits on component mount
+  useEffect(() => {
+    const loadUserCredits = async () => {
+      try {
+        const userData = JSON.parse(localStorage.getItem('nexthesis_user') || '{}');
+        if (userData.email) {
+          const availableCredits = await getAvailableCredits(userData.email);
+          setCredits(availableCredits);
+
+          // If student has credits, skip pricing and set default tier
+          if (availableCredits > 0) {
+            setSelectedTier(pricingTiers[1]); // Default to "Research Starter"
+            setStep(2); // Go directly to scheduling
+          }
+        }
+      } catch (error) {
+        console.error('Error loading credits:', error);
+        setCredits(0);
+      } finally {
+        setLoadingCredits(false);
+      }
+    };
+
+    loadUserCredits();
+  }, []);
+
+  // Generate available time slots when date is selected
+  useEffect(() => {
+    if (!selectedDate || !expert?.availability) {
+      setAvailableSlots([]);
+      setDateError('');
+      return;
+    }
+
+    const date = new Date(selectedDate);
+    const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    const isWeekday = !isWeekend;
+
+    const availability = expert.availability;
+    const availableDays = availability.days || [];
+    const availableTimes = availability.times || [];
+
+    // Check if selected date matches professional's availability
+    const dayMatches =
+      (isWeekday && availableDays.includes('weekday')) ||
+      (isWeekend && availableDays.includes('weekend'));
+
+    if (!dayMatches) {
+      setDateError(
+        isWeekday
+          ? `${expert.first_name} is only available on ${availableDays.includes('weekend') ? 'weekends' : 'weekdays'}`
+          : `${expert.first_name} is only available on ${availableDays.includes('weekday') ? 'weekdays' : 'weekends'}`
+      );
+      setAvailableSlots([]);
+      setSelectedTime('');
+      return;
+    }
+
+    // Generate time slots based on professional's time windows
+    const slots = [];
+    const timeWindows = {
+      morning: { start: 9, end: 12, label: 'Morning' },
+      afternoon: { start: 12, end: 17, label: 'Afternoon' },
+      evening: { start: 17, end: 20, label: 'Evening' }
+    };
+
+    availableTimes.forEach(timeWindow => {
+      const window = timeWindows[timeWindow];
+      if (window) {
+        for (let hour = window.start; hour < window.end; hour++) {
+          const time24 = `${hour.toString().padStart(2, '0')}:00`;
+          const time12 = hour > 12 ? `${hour - 12}:00 PM` : hour === 12 ? '12:00 PM' : `${hour}:00 AM`;
+          slots.push({ value: time24, label: time12, window: window.label });
+        }
+      }
+    });
+
+    setAvailableSlots(slots);
+    setDateError('');
+    setSelectedTime(''); // Reset time selection when date changes
+  }, [selectedDate, expert]);
+
+  // Guard against missing expert - must come AFTER all hooks
   if (!expert) {
     return null;
   }
 
-  const [step, setStep] = useState(1); // 1: questions, 2: pricing recommendation, 3: time preferences
-  const [answers, setAnswers] = useState({
-    expectedInterviews: null,
-    platformExperts: null
-  });
-  const [selectedTier, setSelectedTier] = useState(null);
-  const [recommendedTier, setRecommendedTier] = useState(null);
-  const [timePreferences, setTimePreferences] = useState({
-    dayPreference: null,
-    timePreference: null,
-    timezone: ''
-  });
-  const [submitting, setSubmitting] = useState(false);
-
-  const interviewOptions = [
-    { value: '1-2', label: '1-2 interviews' },
-    { value: '3-5', label: '3-5 interviews' },
-    { value: '6-10', label: '6-10 interviews' }
-  ];
-
-  const platformExpertOptions = [
-    { value: '1', label: '1 expert', interviews: 1, emoji: '👤' },
-    { value: '2', label: '2 experts', interviews: 2, emoji: '👥' },
-    { value: '4', label: '4 experts', interviews: 4, emoji: '👨‍👩‍👧‍👦' },
-    { value: '6+', label: 'More than 6 experts', interviews: 6, emoji: '🌐' }
-  ];
-
-  const pricingTiers = [
-    { id: 'espresso', name: 'Espresso Shot', price: 8, interviews: 1, emoji: '☕' },
-    { id: 'starter', name: 'Research Starter', price: 20, interviews: 2, emoji: '📝', popular: true },
-    { id: 'deepdive', name: 'Deep Dive', price: 32, interviews: 4, emoji: '🔍' },
-    { id: 'complete', name: 'Thesis Complete', price: 60, interviews: 6, emoji: '🎓' }
-  ];
-
-  const calculateRecommendation = () => {
-    const expectedNum = answers.expectedInterviews === '1-2' ? 2 : 
-                       answers.expectedInterviews === '3-5' ? 5 : 10;
-    const platformNum = answers.platformExperts === '6+' ? 6 : parseInt(answers.platformExperts);
-
-    // Recommend based on the minimum needed
-    const needed = Math.min(expectedNum, platformNum);
-
-    if (needed <= 1) return pricingTiers[0];
-    if (needed <= 2) return pricingTiers[1];
-    if (needed <= 4) return pricingTiers[2];
-    return pricingTiers[3];
-  };
-
-  const handleAnswer = (question, value) => {
-    setAnswers({ ...answers, [question]: value });
-  };
-
-  const handleContinue = () => {
-    if (step === 1) {
-      if (answers.expectedInterviews && answers.platformExperts) {
-        const recommendation = calculateRecommendation();
-        setRecommendedTier(recommendation);
-        setStep(2);
-      }
-    }
-  };
-
   const handleSelectTier = (tier) => {
     setSelectedTier(tier);
-    setStep(3);
+    setStep(2); // Go to time preferences
   };
 
   const handleSubmitRequest = async () => {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/88699142-527f-44b9-9504-d1b4c088232e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'InterviewRequest.js:72',message:'handleSubmitRequest called',data:{hasDayPref:!!timePreferences.dayPreference,hasTimePref:!!timePreferences.timePreference,hasTimezone:!!timePreferences.timezone,hasSelectedTier:!!selectedTier,hasExpert:!!expert,expertEmail:expert?.email},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
-    
-    if (!timePreferences.dayPreference || !timePreferences.timePreference || !timePreferences.timezone) {
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/88699142-527f-44b9-9504-d1b4c088232e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'InterviewRequest.js:75',message:'Validation failed - missing preferences',data:{dayPreference:timePreferences.dayPreference,timePreference:timePreferences.timePreference,timezone:timePreferences.timezone},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-      // #endregion
+    // Check if student has available credits
+    if (credits === 0) {
+      if (window.confirm('You need to purchase interview credits first. Go to Buy Credits page?')) {
+        window.location.href = '/buy-credits';
+      }
+      return;
+    }
+
+    if (!selectedDate || !selectedTime) {
+      alert('Please select both a date and time for the interview.');
       return;
     }
 
     if (!selectedTier) {
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/88699142-527f-44b9-9504-d1b4c088232e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'InterviewRequest.js:82',message:'selectedTier is null',data:{selectedTier},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-      // #endregion
       alert('Please select a pricing tier first.');
       return;
     }
 
     if (!expert || !expert.email) {
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/88699142-527f-44b9-9504-d1b4c088232e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'InterviewRequest.js:88',message:'expert or expert.email is missing',data:{expert,expertEmail:expert?.email},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
       alert('Expert information is missing. Please try again.');
       return;
     }
@@ -105,43 +141,54 @@ const InterviewRequest = ({ expert, onClose, onComplete }) => {
     setSubmitting(true);
     try {
       const studentData = JSON.parse(localStorage.getItem('nexthesis_user') || '{}');
-      
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/88699142-527f-44b9-9504-d1b4c088232e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'InterviewRequest.js:96',message:'Creating requestData',data:{studentEmail:studentData.email,professionalEmail:expert.email,selectedTierId:selectedTier.id,selectedTierName:selectedTier.name,selectedTierPrice:selectedTier.price},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-      // #endregion
-      
+
       // Create interview request in database
       const requestData = {
         student_email: studentData.email,
+        student_name: `${studentData.firstName} ${studentData.lastName}`,
+        student_university: studentData.university || '',
+        student_thesis_topic: studentData.thesisTopic || '',
         professional_email: expert.email,
+        professional_name: `${expert.first_name} ${expert.last_name}`,
+        professional_company: expert.company || '',
         pricing_tier: selectedTier.id,
         pricing_tier_name: selectedTier.name,
         price: selectedTier.price,
-        student_day_preference: timePreferences.dayPreference,
-        student_time_preference: timePreferences.timePreference,
-        student_timezone: timePreferences.timezone,
-        status: 'pending', // pending -> confirmed -> paid -> scheduled
-        created_at: new Date().toISOString()
+        preferred_date: selectedDate,
+        preferred_time: selectedTime,
+        status: 'matched' // Auto-match since time falls in availability window
       };
 
-      // In a real app, this would save to Supabase
-      // For now, we'll simulate and show success
-      console.log('Request data:', requestData);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      console.log('Sending interview request to Supabase:', requestData);
+
+      // Save to Supabase
+      const response = await fetch('https://bpupukmduvbzyywbcngj.supabase.co/rest/v1/interview_requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      const responseData = await response.json();
+      console.log('Supabase response:', responseData);
+
+      if (!response.ok) {
+        console.error('Supabase error:', responseData);
+        throw new Error(responseData.message || 'Failed to submit request');
+      }
+
       onComplete({
         expert,
-        answers,
         selectedTier,
-        timePreferences,
+        selectedDate,
+        selectedTime,
         requestData
       });
     } catch (error) {
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/88699142-527f-44b9-9504-d1b4c088232e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'InterviewRequest.js:109',message:'Error in handleSubmitRequest',data:{errorMessage:error.message,errorStack:error.stack,selectedTier,expert:expert?.email},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-      // #endregion
       console.error('Error submitting request:', error);
       alert('Error submitting request. Please try again.');
     } finally {
@@ -159,229 +206,42 @@ const InterviewRequest = ({ expert, onClose, onComplete }) => {
           <X className="w-5 h-5" />
         </button>
 
+        {/* Credit Balance Display */}
+        {!loadingCredits && (
+          <div className="mb-6">
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${
+              credits > 0 ? 'bg-green-500/20 border-green-500/30' : 'bg-red-500/20 border-red-500/30'
+            }`}>
+              <CreditCard className={`w-4 h-4 ${credits > 0 ? 'text-green-400' : 'text-red-400'}`} />
+              <span className={`text-sm font-medium ${credits > 0 ? 'text-green-300' : 'text-red-300'}`}>
+                {credits > 0 ? `${credits} interview credit${credits !== 1 ? 's' : ''} available` : 'No credits available'}
+              </span>
+              {credits === 0 && (
+                <a href="/buy-credits" className="text-xs underline text-red-200 hover:text-red-100">
+                  Buy Credits
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+
         {step === 1 && (
           <div>
             <div className="mb-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-full mb-4">
                 <Sparkles className="w-4 h-4 text-blue-400" />
-                <span className="text-sm font-medium text-blue-300">Request Interview</span>
+                <span className="text-sm font-medium text-blue-300">Choose Your Plan</span>
               </div>
               <h2 className="text-3xl font-bold mb-2">{expert?.first_name || ''} {expert?.last_name || ''}</h2>
               <p className="text-gray-400">{expert?.role || ''} {expert?.company ? `at ${expert.company}` : ''}</p>
             </div>
-
-            <div className="space-y-8">
-              {/* Question 1 */}
-              <div>
-                <h3 className="text-xl font-bold mb-4">
-                  How many interviews are you expecting for this thesis?
-                </h3>
-                <div className="grid grid-cols-3 gap-4">
-                  {interviewOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => handleAnswer('expectedInterviews', option.value)}
-                      className={`p-6 rounded-xl border-2 transition-all text-left ${
-                        answers.expectedInterviews === option.value
-                          ? 'border-blue-500 bg-blue-500/20'
-                          : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
-                      }`}
-                    >
-                      <div className="text-2xl mb-2">{option.value === '1-2' ? '📝' : option.value === '3-5' ? '📚' : '🎓'}</div>
-                      <div className="font-semibold">{option.label}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Question 2 */}
-              <div>
-                <h3 className="text-xl font-bold mb-4">
-                  How many experts in this platform suit your research needs?
-                </h3>
-                <div className="grid grid-cols-4 gap-4">
-                  {platformExpertOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => handleAnswer('platformExperts', option.value)}
-                      className={`p-6 rounded-xl border-2 transition-all text-center ${
-                        answers.platformExperts === option.value
-                          ? 'border-purple-500 bg-purple-500/20'
-                          : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
-                      }`}
-                    >
-                      <div className="text-2xl mb-2">{option.emoji}</div>
-                      <div className="font-semibold text-sm">{option.label}</div>
-                      <div className="text-xs text-gray-400 mt-1">{option.interviews} interview{option.interviews > 1 ? 's' : ''}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 flex justify-end">
-              <button
-                onClick={handleContinue}
-                disabled={!answers.expectedInterviews || !answers.platformExperts}
-                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 disabled:cursor-not-allowed rounded-xl font-bold text-lg transition-all shadow-lg shadow-blue-500/30 flex items-center gap-2"
-              >
-                Continue
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div>
-            <div className="mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 rounded-full mb-4">
-                <Sparkles className="w-4 h-4 text-purple-400" />
-                <span className="text-sm font-medium text-purple-300">Schedule Your Interview</span>
-              </div>
-              <h2 className="text-3xl font-bold mb-2">When works for you?</h2>
-              <p className="text-gray-400">
-                Select your preferred day and time. We'll match it with {expert.first_name}'s availability.
-              </p>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium mb-3 text-gray-300">Day Preference *</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {['Weekday', 'Weekend', 'Both'].map(option => (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => setTimePreferences({...timePreferences, dayPreference: option.toLowerCase()})}
-                      className={`px-4 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
-                        timePreferences.dayPreference === option.toLowerCase()
-                          ? 'border-blue-500 bg-blue-500/20 text-white'
-                          : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:bg-white/10'
-                      }`}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-3 text-gray-300">Time Preference *</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {['Morning', 'Afternoon', 'Evening'].map(option => (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => setTimePreferences({...timePreferences, timePreference: option.toLowerCase()})}
-                      className={`px-4 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
-                        timePreferences.timePreference === option.toLowerCase()
-                          ? 'border-purple-500 bg-purple-500/20 text-white'
-                          : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:bg-white/10'
-                      }`}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-300">Your Timezone *</label>
-                <select
-                  value={timePreferences.timezone}
-                  onChange={(e) => setTimePreferences({...timePreferences, timezone: e.target.value})}
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 transition-all"
-                >
-                  <option value="" className="bg-gray-900">Select timezone</option>
-                  <option value="UTC" className="bg-gray-900">UTC</option>
-                  <option value="Europe/London" className="bg-gray-900">Europe/London (GMT)</option>
-                  <option value="Europe/Paris" className="bg-gray-900">Europe/Paris (CET)</option>
-                  <option value="Europe/Madrid" className="bg-gray-900">Europe/Madrid (CET)</option>
-                  <option value="America/New_York" className="bg-gray-900">America/New_York (EST)</option>
-                  <option value="America/Los_Angeles" className="bg-gray-900">America/Los_Angeles (PST)</option>
-                  <option value="Asia/Dubai" className="bg-gray-900">Asia/Dubai (GST)</option>
-                  <option value="Asia/Singapore" className="bg-gray-900">Asia/Singapore (SGT)</option>
-                  <option value="Asia/Tokyo" className="bg-gray-900">Asia/Tokyo (JST)</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="mt-8 flex gap-4 justify-end">
-              <button
-                onClick={() => setStep(2)}
-                className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-semibold transition-all"
-              >
-                Back
-              </button>
-              <button
-                onClick={handleSubmitRequest}
-                disabled={!timePreferences.dayPreference || !timePreferences.timePreference || !timePreferences.timezone || submitting}
-                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 disabled:cursor-not-allowed rounded-xl font-bold text-lg transition-all shadow-lg shadow-blue-500/30 flex items-center gap-2"
-              >
-                {submitting ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Submitting...
-                  </>
-                ) : (
-                  <>
-                    Submit Request
-                    <ArrowRight className="w-5 h-5" />
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div>
-            <div className="mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-full mb-4">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                <span className="text-sm font-medium text-green-300">Recommended Plan</span>
-              </div>
-              <h2 className="text-3xl font-bold mb-2">Choose Your Plan</h2>
-              <p className="text-gray-400">
-                Based on your answers, we recommend a plan that fits your research needs.
-              </p>
-            </div>
-
-            {recommendedTier && (
-            <div className="mb-6 bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
-              <div className="flex items-start gap-4">
-                <div className="text-4xl">{recommendedTier.emoji}</div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-2xl font-bold">{recommendedTier.name}</h3>
-                    {recommendedTier.popular && (
-                      <span className="px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded-full">
-                        RECOMMENDED
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-gray-300 mb-2">
-                    {recommendedTier.interviews} interview{recommendedTier.interviews > 1 ? 's' : ''} for €{recommendedTier.price}
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    Perfect for {answers.expectedInterviews === '1-2' ? '1-2' : answers.expectedInterviews === '3-5' ? '3-5' : '6-10'} interviews with {answers.platformExperts === '6+' ? '6+' : answers.platformExperts} expert{answers.platformExperts !== '1' ? 's' : ''}
-                  </p>
-                </div>
-              </div>
-            </div>
-            )}
 
             <div className="grid grid-cols-2 gap-4 mb-8">
               {pricingTiers.map((tier) => (
                 <button
                   key={tier.id}
                   onClick={() => handleSelectTier(tier)}
-                  className={`p-6 rounded-xl border-2 transition-all text-left ${
-                    recommendedTier && tier.id === recommendedTier.id
-                      ? 'border-blue-500 bg-blue-500/20 ring-2 ring-blue-500/50'
-                      : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
-                  }`}
+                  className="p-6 rounded-xl border-2 transition-all text-left border-white/10 bg-white/5 hover:border-blue-500 hover:bg-blue-500/10"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="text-3xl">{tier.emoji}</div>
@@ -400,28 +260,121 @@ const InterviewRequest = ({ expert, onClose, onComplete }) => {
               ))}
             </div>
 
-            <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
               <p className="text-sm text-blue-200">
-                💡 <strong>Next:</strong> After selecting your plan, you'll choose your preferred time slots. Payment will only be processed after the expert confirms the interview.
+                💡 <strong>Next:</strong> After selecting your plan, choose your preferred time slots. Payment will be processed after the expert confirms.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div>
+            <div className="mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 rounded-full mb-4">
+                <Sparkles className="w-4 h-4 text-purple-400" />
+                <span className="text-sm font-medium text-purple-300">Schedule Your Interview</span>
+              </div>
+              <h2 className="text-3xl font-bold mb-2">Pick a Date & Time</h2>
+              <p className="text-gray-400">
+                Select when you'd like to meet with {expert.first_name}. Times shown match their availability in {expert.availability?.timezone || 'their timezone'}.
               </p>
             </div>
 
-            <div className="flex gap-4 justify-end">
+            {/* Professional's Availability Info */}
+            {expert.availability && (
+              <div className="bg-gradient-to-br from-green-500/10 to-blue-500/10 border border-green-500/30 rounded-xl p-4 mb-6">
+                <div className="text-sm text-green-300 font-medium mb-2">📅 {expert.first_name}'s Availability:</div>
+                <div className="flex flex-wrap gap-2">
+                  {expert.availability.days?.map(day => (
+                    <span key={day} className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-300 rounded-lg text-xs font-medium capitalize">
+                      {day === 'weekday' ? 'Mon-Fri' : 'Sat-Sun'}
+                    </span>
+                  ))}
+                  {expert.availability.times?.map(time => (
+                    <span key={time} className="px-3 py-1 bg-purple-500/20 border border-purple-500/30 text-purple-300 rounded-lg text-xs font-medium capitalize">
+                      {time === 'morning' ? '9am-12pm' : time === 'afternoon' ? '12pm-5pm' : '5pm-8pm'}
+                    </span>
+                  ))}
+                  <span className="px-3 py-1 bg-green-500/20 border border-green-500/30 text-green-300 rounded-lg text-xs font-medium">
+                    {expert.availability.timezone || 'IST'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-300">Interview Date *</label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 transition-all [color-scheme:dark]"
+                  style={{ colorScheme: 'dark' }}
+                />
+                {dateError && (
+                  <p className="text-red-400 text-sm mt-2">⚠️ {dateError}</p>
+                )}
+              </div>
+
+              {selectedDate && availableSlots.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium mb-3 text-gray-300">Available Time Slots *</label>
+                  <div className="grid grid-cols-3 gap-3 max-h-60 overflow-y-auto">
+                    {availableSlots.map(slot => (
+                      <button
+                        key={slot.value}
+                        type="button"
+                        onClick={() => setSelectedTime(slot.value)}
+                        className={`px-4 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                          selectedTime === slot.value
+                            ? 'border-purple-500 bg-purple-500/20 text-white'
+                            : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:bg-white/10'
+                        }`}
+                      >
+                        <div className="font-bold">{slot.label}</div>
+                        <div className="text-xs text-gray-500">{slot.window}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedDate && availableSlots.length === 0 && !dateError && (
+                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
+                  <p className="text-yellow-300 text-sm">
+                    ℹ️ No availability set for this professional yet. They can still manually confirm your request.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-8 flex gap-4 justify-end">
               <button
                 onClick={() => setStep(1)}
                 className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-semibold transition-all"
               >
                 Back
               </button>
-              {recommendedTier && (
               <button
-                onClick={() => handleSelectTier(recommendedTier)}
-                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-lg transition-all shadow-lg shadow-blue-500/30 flex items-center gap-2"
+                onClick={handleSubmitRequest}
+                disabled={!selectedDate || !selectedTime || dateError || submitting}
+                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 disabled:cursor-not-allowed rounded-xl font-bold text-lg transition-all shadow-lg shadow-blue-500/30 flex items-center gap-2"
               >
-                Proceed with {recommendedTier.name}
-                <ArrowRight className="w-5 h-5" />
+                {submitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    Submit Request
+                    <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
               </button>
-              )}
             </div>
           </div>
         )}
