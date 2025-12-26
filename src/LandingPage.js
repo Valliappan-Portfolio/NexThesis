@@ -62,28 +62,28 @@ const LandingPage = () => {
 
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-black/50 backdrop-blur-xl border-b border-white/10 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between">
           <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src="/logo.png" alt="NexThesis" className="w-8 h-8" />
-            <span className="text-xl font-bold tracking-wide">NexThesis</span>
+            <img src="/logo.png" alt="NexThesis" className="w-7 h-7 sm:w-8 sm:h-8" />
+            <span className="text-lg sm:text-xl font-bold tracking-wide">NexThesis</span>
           </a>
-          <div className="flex gap-4 items-center">
-            <a href="#why" className="text-gray-400 hover:text-white transition-colors text-sm font-medium">
+          <div className="flex gap-2 sm:gap-4 items-center">
+            <a href="#why" className="hidden sm:inline text-gray-400 hover:text-white transition-colors text-sm font-medium">
               Why NexThesis
             </a>
-            <a href="/pricing" className="text-gray-400 hover:text-white transition-colors text-sm font-medium">
+            <a href="/pricing" className="hidden sm:inline text-gray-400 hover:text-white transition-colors text-sm font-medium">
               Pricing
             </a>
             {returningUser && (
               <button
                 onClick={handleReturningUserClick}
-                className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-sm transition-all flex items-center gap-2"
+                className="hidden md:flex px-4 sm:px-5 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-xs sm:text-sm transition-all items-center gap-2"
               >
                 <LogIn className="w-4 h-4" />
-                Welcome Back
+                <span className="hidden lg:inline">Welcome Back</span>
               </button>
             )}
-            <a href="/browse" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-sm transition-all">
+            <a href="/browse" className="px-3 sm:px-5 py-2 sm:py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-xs sm:text-sm transition-all whitespace-nowrap">
               Browse Experts
             </a>
           </div>
@@ -91,16 +91,16 @@ const LandingPage = () => {
       </nav>
 
       {/* Hero Section */}
-      <div className="relative pt-32 pb-20 px-6">
+      <div className="relative pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto text-center">
           {/* Floating Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full mb-8 hover:bg-white/10 transition-all cursor-pointer">
-            <Sparkles className="w-4 h-4 text-blue-400" />
-            <span className="text-sm text-gray-300">Trusted by Business Students Across Europe</span>
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full mb-6 sm:mb-8 hover:bg-white/10 transition-all cursor-pointer">
+            <Sparkles className="w-3 sm:w-4 h-3 sm:h-4 text-blue-400" />
+            <span className="text-xs sm:text-sm text-gray-300">Trusted by Business Students Across Europe</span>
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-7xl font-bold mb-6 leading-tight" style={{ letterSpacing: '0.02em' }}>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight px-2" style={{ letterSpacing: '0.02em' }}>
             Expert Interviews,
             <br />
             <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-blue-500 bg-clip-text text-transparent">
@@ -108,23 +108,23 @@ const LandingPage = () => {
             </span>
           </h1>
 
-          <p className="text-xl text-gray-400 mb-4 max-w-2xl mx-auto leading-relaxed font-medium">
+          <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-4 max-w-2xl mx-auto leading-relaxed font-medium px-2">
             Book verified professionals in under 5 minutes. Structured 30-minute sessions. Show up, learn, cite with confidence.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col items-center gap-4 mb-20">
-            <div className="flex gap-4">
-              <a href="/register/student" className="group px-10 py-5 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all font-bold text-xl shadow-lg shadow-blue-500/20 flex items-center gap-2 pulse-glow" style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)' }}>
+          <div className="flex flex-col items-center gap-3 sm:gap-4 mb-12 sm:mb-20">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-4 sm:px-0">
+              <a href="/register/student" className="group px-6 sm:px-10 py-4 sm:py-5 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all font-bold text-base sm:text-xl shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 pulse-glow" style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)' }}>
                 I'm a Student
-                <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 sm:w-6 h-5 sm:h-6 group-hover:translate-x-1 transition-transform" />
               </a>
-              <a href="/register/professional" className="px-10 py-5 bg-purple-600 hover:bg-purple-500 rounded-xl transition-all font-bold text-xl shadow-lg shadow-purple-500/20 flex items-center gap-2" style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)' }}>
+              <a href="/register/professional" className="px-6 sm:px-10 py-4 sm:py-5 bg-purple-600 hover:bg-purple-500 rounded-xl transition-all font-bold text-base sm:text-xl shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2" style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)' }}>
                 I'm a Professional
-                <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 sm:w-6 h-5 sm:h-6 group-hover:translate-x-1 transition-transform" />
               </a>
             </div>
-            <div className="text-gray-500 text-sm">
+            <div className="text-gray-500 text-xs sm:text-sm text-center px-4">
               No subscription. Pay per interview. Start with one session.
             </div>
             <div className="flex flex-col items-center gap-3">
@@ -151,16 +151,16 @@ const LandingPage = () => {
           </div>
 
           {/* Animated Stats */}
-          <div className="flex justify-center gap-12 text-sm">
-            <div className="flex items-center gap-2 text-gray-400">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-12 text-xs sm:text-sm px-4">
+            <div className="flex items-center justify-center gap-2 text-gray-400">
               <Shield className="w-4 h-4 text-blue-400" />
               <span>Verified Experts</span>
             </div>
-            <div className="flex items-center gap-2 text-gray-400">
+            <div className="flex items-center justify-center gap-2 text-gray-400">
               <Star className="w-4 h-4 text-blue-400" />
               <span>30-Min Interviews</span>
             </div>
-            <div className="flex items-center gap-2 text-gray-400">
+            <div className="flex items-center justify-center gap-2 text-gray-400">
               <Users className="w-4 h-4 text-blue-400" />
               <span>Growing Community</span>
             </div>
@@ -169,21 +169,21 @@ const LandingPage = () => {
       </div>
 
       {/* Company Logos Carousel - Restored */}
-      <div className="relative py-20 px-6 bg-gradient-to-b from-transparent via-white/5 to-transparent">
+      <div className="relative py-12 sm:py-20 px-4 sm:px-6 bg-gradient-to-b from-transparent via-white/5 to-transparent">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent px-4">
               Our experts have shaped strategy at:
             </h2>
           </div>
 
           {/* Animated Company Carousel */}
-          <div className="relative overflow-hidden py-8">
-            <div className="flex animate-scroll gap-20 items-center">
+          <div className="relative overflow-hidden py-6 sm:py-8">
+            <div className="flex animate-scroll gap-12 sm:gap-20 items-center">
               {[...companies, ...companies].map((company, idx) => (
                 <div
                   key={idx}
-                  className="text-3xl font-bold text-white/70 hover:text-white transition-all cursor-pointer whitespace-nowrap flex-shrink-0 hover:scale-110 drop-shadow-lg px-4"
+                  className="text-xl sm:text-3xl font-bold text-white/70 hover:text-white transition-all cursor-pointer whitespace-nowrap flex-shrink-0 hover:scale-110 drop-shadow-lg px-2 sm:px-4"
                   style={{ textShadow: '0 0 20px rgba(79, 70, 229, 0.3)' }}
                 >
                   {company}
@@ -191,67 +191,67 @@ const LandingPage = () => {
               ))}
             </div>
           </div>
-          <div className="text-center mt-8 text-gray-500 text-sm">
+          <div className="text-center mt-6 sm:mt-8 text-gray-500 text-xs sm:text-sm px-4">
             Replace company names with actual logos for production
           </div>
         </div>
       </div>
 
       {/* LinkedIn Comparison Section */}
-      <div className="relative py-24 px-6">
+      <div id="why" className="relative py-16 sm:py-24 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-6">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 px-4">
               Why NexThesis,
               <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> Not LinkedIn?</span>
             </h2>
           </div>
 
           {/* Comparison Table - Condensed to Top 4 */}
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 overflow-hidden">
-            <div className="grid grid-cols-2 gap-8">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-8 overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
               {/* LinkedIn Column */}
               <div>
-                <h3 className="text-2xl font-bold mb-6 text-red-400/80">LinkedIn Cold Outreach</h3>
-                <div className="space-y-5">
-                  <div className="flex items-start gap-3">
-                    <span className="text-red-400 text-xl">❌</span>
-                    <span className="text-gray-300">5% response rate</span>
+                <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-red-400/80">LinkedIn Cold Outreach</h3>
+                <div className="space-y-3 sm:space-y-5">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <span className="text-red-400 text-lg sm:text-xl">❌</span>
+                    <span className="text-gray-300 text-sm sm:text-base">5% response rate</span>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-red-400 text-xl">❌</span>
-                    <span className="text-gray-300">Weeks of back-and-forth</span>
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <span className="text-red-400 text-lg sm:text-xl">❌</span>
+                    <span className="text-gray-300 text-sm sm:text-base">Weeks of back-and-forth</span>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-red-400 text-xl">❌</span>
-                    <span className="text-gray-300">Frequent no-shows</span>
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <span className="text-red-400 text-lg sm:text-xl">❌</span>
+                    <span className="text-gray-300 text-sm sm:text-base">Frequent no-shows</span>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-red-400 text-xl">❌</span>
-                    <span className="text-gray-300">Free (but costs 40+ hours)</span>
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <span className="text-red-400 text-lg sm:text-xl">❌</span>
+                    <span className="text-gray-300 text-sm sm:text-base">Free (but costs 40+ hours)</span>
                   </div>
                 </div>
               </div>
 
               {/* NexThesis Column */}
               <div>
-                <h3 className="text-2xl font-bold mb-6 text-green-400">NexThesis</h3>
-                <div className="space-y-5">
-                  <div className="flex items-start gap-3">
-                    <span className="text-green-400 text-xl">✅</span>
-                    <span className="text-white font-medium">Guaranteed responses</span>
+                <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-green-400">NexThesis</h3>
+                <div className="space-y-3 sm:space-y-5">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <span className="text-green-400 text-lg sm:text-xl">✅</span>
+                    <span className="text-white font-medium text-sm sm:text-base">Guaranteed responses</span>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-green-400 text-xl">✅</span>
-                    <span className="text-white font-medium">Book in under 5 minutes</span>
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <span className="text-green-400 text-lg sm:text-xl">✅</span>
+                    <span className="text-white font-medium text-sm sm:text-base">Book in under 5 minutes</span>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-green-400 text-xl">✅</span>
-                    <span className="text-white font-medium">Show-up guaranteed</span>
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <span className="text-green-400 text-lg sm:text-xl">✅</span>
+                    <span className="text-white font-medium text-sm sm:text-base">Show-up guaranteed</span>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-green-400 text-xl">✅</span>
-                    <span className="text-white font-medium">Paid (but saves you weeks)</span>
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <span className="text-green-400 text-lg sm:text-xl">✅</span>
+                    <span className="text-white font-medium text-sm sm:text-base">Paid (but saves you weeks)</span>
                   </div>
                 </div>
               </div>
@@ -261,22 +261,22 @@ const LandingPage = () => {
       </div>
 
       {/* Benefits Section - Professional Icons */}
-      <div id="why" className="relative py-24 px-6">
+      <div className="relative py-16 sm:py-24 px-4 sm:px-6">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
 
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl font-bold mb-6">
+          <div className="text-center mb-12 sm:mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 px-4">
               Research
               <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> Like You Mean It</span>
             </h2>
-            <p className="text-gray-400 text-xl max-w-2xl mx-auto">
+            <p className="text-gray-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto px-4">
               Stop guessing. Start interviewing. Connect with industry experts who bring real-world insights to your academic work.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16">
             {/* Benefit Cards - Professional Icons */}
             <div className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 hover:border-blue-400/50 transition-all cursor-pointer">
               <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4">
@@ -322,19 +322,19 @@ const LandingPage = () => {
       </div>
 
       {/* Academic Impact Section */}
-      <div className="relative py-24 px-6 bg-gradient-to-b from-transparent via-white/5 to-transparent">
+      <div className="relative py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-b from-transparent via-white/5 to-transparent">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-6">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 px-4">
               From Interview to
               <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> A-Grade Citation</span>
             </h2>
-            <p className="text-gray-400 text-xl max-w-2xl mx-auto">
+            <p className="text-gray-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto px-4">
               Industry insights your professors actually want to see. Strengthen your methodology, elevate your analysis.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             <div className="bg-gradient-to-br from-blue-600/10 to-purple-600/10 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8">
               <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mb-4">
                 <FileText className="w-6 h-6 text-blue-400" />
