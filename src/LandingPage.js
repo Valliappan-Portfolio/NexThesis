@@ -33,11 +33,10 @@ const LandingPage = () => {
     { name: 'IBM', logo: 'https://logo.clearbit.com/ibm.com' },
     { name: 'PwC', logo: 'https://logo.clearbit.com/pwc.com' },
     { name: 'AWS', logo: 'https://logo.clearbit.com/aws.amazon.com' },
+    { name: 'GEP', logo: 'https://logo.clearbit.com/gep.com' },
     { name: 'Infosys', logo: 'https://logo.clearbit.com/infosys.com' },
     { name: 'Deloitte', logo: 'https://logo.clearbit.com/deloitte.com' },
-    { name: 'Accenture', logo: 'https://logo.clearbit.com/accenture.com' },
-    { name: 'McKinsey', logo: 'https://logo.clearbit.com/mckinsey.com' },
-    { name: 'Bain', logo: 'https://logo.clearbit.com/bain.com' }
+    { name: 'Accenture', logo: 'https://logo.clearbit.com/accenture.com' }
   ];
 
   return (
@@ -185,22 +184,17 @@ const LandingPage = () => {
               {[...companies, ...companies].map((company, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-center h-12 sm:h-16 flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity grayscale hover:grayscale-0"
+                  className="flex items-center justify-center flex-shrink-0"
                 >
                   <img
                     src={company.logo}
                     alt={company.name}
-                    className="h-8 sm:h-10 w-auto object-contain filter brightness-200"
+                    className="h-8 sm:h-12 w-auto object-contain opacity-50 hover:opacity-100 transition-opacity"
+                    style={{ filter: 'brightness(0) invert(1)' }}
                     onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'block';
+                      e.target.parentElement.innerHTML = `<span class="text-lg sm:text-2xl font-bold text-white/70 whitespace-nowrap">${company.name}</span>`;
                     }}
                   />
-                  <span
-                    className="hidden text-lg sm:text-2xl font-bold text-white/70"
-                  >
-                    {company.name}
-                  </span>
                 </div>
               ))}
             </div>
@@ -406,38 +400,6 @@ const LandingPage = () => {
                 )}
               </div>
             ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Social Proof - Placeholder */}
-      <div className="py-20 px-6 bg-gradient-to-b from-transparent via-white/5 to-transparent">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">What Students Say</h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
-              <p className="text-gray-300 leading-relaxed mb-4 italic">
-                "Booked a Nestlé supply chain director in 3 minutes. Best €8 I spent on my thesis."
-              </p>
-              <p className="text-sm text-gray-500">— MBA Student, Rotterdam</p>
-            </div>
-
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
-              <p className="text-gray-300 leading-relaxed mb-4 italic">
-                "My supervisor was impressed I interviewed real McKinsey consultants. Worth every cent."
-              </p>
-              <p className="text-sm text-gray-500">— Business Student, Munich</p>
-            </div>
-
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
-              <p className="text-gray-300 leading-relaxed mb-4 italic">
-                "Finally got expert insights without weeks of LinkedIn ghosting. Game changer."
-              </p>
-              <p className="text-sm text-gray-500">— Master's Student, Paris</p>
-            </div>
           </div>
         </div>
       </div>
