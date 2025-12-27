@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Sparkles, Users, Shield, Star, LogIn, FileText, TrendingUp, Award, Zap, CheckCircle } from 'lucide-react';
+import { ArrowRight, Users, Shield, Star, LogIn, FileText, TrendingUp, Award, Zap, CheckCircle } from 'lucide-react';
 
 const LandingPage = () => {
   const [returningUser, setReturningUser] = useState(null);
@@ -28,8 +28,16 @@ const LandingPage = () => {
   };
 
   const companies = [
-    'Nestlé', 'Visa', 'IBM', 'PwC', 'AWS', 'GEP',
-    'Infosys', 'Deloitte', 'ANZ', 'Accenture', 'McKinsey', 'Bain'
+    { name: 'Nestlé', logo: 'https://logo.clearbit.com/nestle.com' },
+    { name: 'Visa', logo: 'https://logo.clearbit.com/visa.com' },
+    { name: 'IBM', logo: 'https://logo.clearbit.com/ibm.com' },
+    { name: 'PwC', logo: 'https://logo.clearbit.com/pwc.com' },
+    { name: 'AWS', logo: 'https://logo.clearbit.com/aws.amazon.com' },
+    { name: 'Infosys', logo: 'https://logo.clearbit.com/infosys.com' },
+    { name: 'Deloitte', logo: 'https://logo.clearbit.com/deloitte.com' },
+    { name: 'Accenture', logo: 'https://logo.clearbit.com/accenture.com' },
+    { name: 'McKinsey', logo: 'https://logo.clearbit.com/mckinsey.com' },
+    { name: 'Bain', logo: 'https://logo.clearbit.com/bain.com' }
   ];
 
   return (
@@ -93,12 +101,6 @@ const LandingPage = () => {
       {/* Hero Section */}
       <div className="relative pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto text-center">
-          {/* Floating Badge */}
-          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full mb-6 sm:mb-8 hover:bg-white/10 transition-all cursor-pointer">
-            <Sparkles className="w-3 sm:w-4 h-3 sm:h-4 text-blue-400" />
-            <span className="text-xs sm:text-sm text-gray-300">Trusted by Business Students Across Europe</span>
-          </div>
-
           {/* Main Headline */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight px-2" style={{ letterSpacing: '0.02em' }}>
             Expert Interviews,
@@ -109,7 +111,7 @@ const LandingPage = () => {
           </h1>
 
           <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-4 max-w-2xl mx-auto leading-relaxed font-medium px-2">
-            Book verified professionals in under 5 minutes. Structured 30-minute sessions. Show up, learn, cite with confidence.
+            Book verified professionals in under 5 minutes. Structured 30-minute sessions. Show up, learn, strengthen your research.
           </p>
 
           {/* CTA Buttons */}
@@ -179,20 +181,29 @@ const LandingPage = () => {
 
           {/* Animated Company Carousel */}
           <div className="relative overflow-hidden py-6 sm:py-8">
-            <div className="flex animate-scroll gap-12 sm:gap-20 items-center">
+            <div className="flex animate-scroll gap-12 sm:gap-16 items-center">
               {[...companies, ...companies].map((company, idx) => (
                 <div
                   key={idx}
-                  className="text-xl sm:text-3xl font-bold text-white/70 hover:text-white transition-all cursor-pointer whitespace-nowrap flex-shrink-0 hover:scale-110 drop-shadow-lg px-2 sm:px-4"
-                  style={{ textShadow: '0 0 20px rgba(79, 70, 229, 0.3)' }}
+                  className="flex items-center justify-center h-12 sm:h-16 flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity grayscale hover:grayscale-0"
                 >
-                  {company}
+                  <img
+                    src={company.logo}
+                    alt={company.name}
+                    className="h-8 sm:h-10 w-auto object-contain filter brightness-200"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'block';
+                    }}
+                  />
+                  <span
+                    className="hidden text-lg sm:text-2xl font-bold text-white/70"
+                  >
+                    {company.name}
+                  </span>
                 </div>
               ))}
             </div>
-          </div>
-          <div className="text-center mt-6 sm:mt-8 text-gray-500 text-xs sm:text-sm px-4">
-            Replace company names with actual logos for production
           </div>
         </div>
       </div>
