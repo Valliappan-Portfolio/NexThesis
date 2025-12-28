@@ -424,26 +424,6 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
-
-
-      {/* Final CTA Section - Enhanced with Urgency */}
-      <div className="py-20 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-12 text-center overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_50%)]"></div>
-            <div className="relative z-10">
-              <h2 className="text-4xl font-bold mb-4">Your Thesis Deadline Isn't Moving. Your Research Can.</h2>
-              <p className="text-blue-100 text-lg mb-2">Join business students across Europe who've already interviewed 100+ Fortune 500 professionals.</p>
-              <p className="text-blue-200 text-sm mb-8">No subscription. Pay per interview. Start with one session.</p>
-              <a href="/browse" className="inline-flex items-center gap-2 px-10 py-4 bg-white text-blue-600 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-2xl">
-                Browse Experts Now
-                <ArrowRight className="w-5 h-5" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Footer */}
       <footer className="border-t border-white/10 py-12 px-6 bg-black/50 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto text-center">

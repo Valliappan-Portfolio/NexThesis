@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRight, X, Sparkles, CreditCard } from 'lucide-react';
 import { getAvailableCredits } from './utils/creditSystem';
 
-// Pricing tiers defined outside component to avoid re-creation
+// Updated pricing tiers to match main pricing page
 const pricingTiers = [
-  { id: 'espresso', name: 'Espresso Shot', price: 8, interviews: 1, emoji: '☕' },
-  { id: 'starter', name: 'Research Starter', price: 20, interviews: 2, emoji: '📝', popular: true },
-  { id: 'deepdive', name: 'Deep Dive', price: 32, interviews: 4, emoji: '🔍' },
-  { id: 'complete', name: 'Thesis Complete', price: 60, interviews: 6, emoji: '🎓' }
+  { id: 'starter', name: 'Starter', price: 29, interviews: 1, emoji: '👤' },
+  { id: 'research_pack', name: 'Research Pack', price: 79, interviews: 3, emoji: '👥', popular: true, savings: 8 },
+  { id: 'thesis_bundle', name: 'Thesis Bundle', price: 129, interviews: 5, emoji: '👥👥', savings: 16 }
 ];
 
 const InterviewRequest = ({ expert, onClose, onComplete }) => {
@@ -37,7 +36,7 @@ const InterviewRequest = ({ expert, onClose, onComplete }) => {
 
           // If student has credits, skip pricing and set default tier
           if (availableCredits > 0) {
-            setSelectedTier(pricingTiers[1]); // Default to "Research Starter"
+            setSelectedTier(pricingTiers[1]); // Default to "Research Pack" (most popular)
             setStep(2); // Go directly to scheduling
           }
         }

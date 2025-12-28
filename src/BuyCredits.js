@@ -12,44 +12,36 @@ const BuyCredits = () => {
 
   const packages = [
     {
-      id: 'espresso',
-      name: 'Espresso Shot',
-      interviews: 1,
-      price: 20,
-      pricePerInterview: 20,
-      emoji: '☕',
-      description: 'Perfect for a quick expert consultation'
-    },
-    {
       id: 'starter',
-      name: 'Research Starter',
-      interviews: 2,
-      price: 40,
-      pricePerInterview: 20,
-      emoji: '📝',
+      name: 'Starter',
+      interviews: 1,
+      price: 29,
+      pricePerInterview: 29,
+      emoji: '👤',
+      description: 'Testing platform • Adding one expert source'
+    },
+    {
+      id: 'research_pack',
+      name: 'Research Pack',
+      interviews: 3,
+      price: 79,
+      pricePerInterview: 26.33,
+      emoji: '👥',
       popular: true,
-      description: 'Great for initial thesis research'
+      savings: 8,
+      badge: 'Most Popular',
+      description: 'Meeting thesis requirements (3-5 sources)'
     },
     {
-      id: 'deepdive',
-      name: 'Deep Dive',
-      interviews: 4,
-      price: 72,
-      pricePerInterview: 18,
-      emoji: '🔍',
-      savings: 10,
-      description: 'Comprehensive research package'
-    },
-    {
-      id: 'complete',
-      name: 'Thesis Complete',
-      interviews: 6,
-      price: 96,
-      pricePerInterview: 16,
-      emoji: '🎓',
-      savings: 20,
+      id: 'thesis_bundle',
+      name: 'Thesis Bundle',
+      interviews: 5,
+      price: 129,
+      pricePerInterview: 25.80,
+      emoji: '👥👥',
+      savings: 16,
       badge: 'Best Value',
-      description: 'Complete thesis research support'
+      description: 'MBA/Master\'s thesis • Multi-sector analysis'
     }
   ];
 
