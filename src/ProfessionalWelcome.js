@@ -49,7 +49,7 @@ const ProfessionalWelcome = () => {
 
       if (Array.isArray(data)) {
         // Calculate stats from the data
-        const pending = data.filter(r => r.status === 'pending').length;
+        const pending = data.filter(r => r.status === 'pending' || r.status === 'matched').length;
         const approved = data.filter(r => r.status === 'confirmed' || r.status === 'approved').length;
         const declined = data.filter(r => r.status === 'declined').length;
 
