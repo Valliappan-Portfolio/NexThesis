@@ -184,7 +184,7 @@ setSubmitted(true);
             </h1>
             
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-              Your profile is live. Ready to find the perfect expert who'll make your thesis supervisor say <span className="text-blue-400 font-semibold">"Now that's proper research!"</span>
+              Your profile is live! Get ready to find the perfect expert who'll make your thesis supervisor say <span className="text-blue-400 font-semibold">"Now that's proper research!"</span>
             </p>
 
             <div className="bg-white/10 rounded-2xl p-6 mb-8 text-left">
