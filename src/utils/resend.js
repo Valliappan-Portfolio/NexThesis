@@ -401,25 +401,17 @@ async function sendEmail({ to, subject, html }) {
     console.log('   To:', to);
     console.log('   Subject:', subject);
 
-    // Use Resend's test domain for development
-    // For production: verify your domain at https://resend.com/domains
-    const fromEmail = 'onboarding@resend.dev'; // Resend's test domain
-
-    // IMPORTANT: With onboarding@resend.dev, emails can only be sent to the API key owner's email
-    // This is a Resend limitation. To send to any email, verify your domain at resend.com/domains
-    const TEST_MODE_EMAIL = 'rraagul5@gmail.com'; // API key owner's email
-    const actualRecipient = to;
-    const recipientEmail = to; // Keep original for now, will handle 403 below
+    // Using verified domain: nexthesis.com
+    const fromEmail = 'noreply@nexthesis.com';
 
     const emailPayload = {
       from: fromEmail,
-      to: [recipientEmail],
-      subject: `${subject} [TO: ${actualRecipient}]`, // Show intended recipient in subject during test mode
-      html: html + `<p style="margin-top: 30px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; color: #856404; font-size: 12px;"><strong>⚠️ TEST MODE:</strong> This email was intended for <strong>${actualRecipient}</strong> but was sent to you (${recipientEmail}) because Resend test domain can only send to the API key owner. To send to any email, verify your domain at resend.com/domains</p>`
+      to: [to],
+      subject: subject,
+      html: html
     };
 
     console.log('   From:', fromEmail);
-    console.log('   Attempting to send to:', recipientEmail);
 
     const response = await fetch(`${RESEND_API_URL}/emails`, {
       method: 'POST',
@@ -433,49 +425,6 @@ async function sendEmail({ to, subject, html }) {
     const responseData = await response.json();
 
     if (!response.ok) {
-      // Check if it's the "can only send to your own email" error
-      if (response.status === 403 && responseData.message && responseData.message.includes('your own email address')) {
-        console.warn('⚠️ Resend test mode: Redirecting email to API key owner');
-        console.warn(`   Original recipient: ${actualRecipient}`);
-        console.warn(`   Redirecting to: ${TEST_MODE_EMAIL}`);
-
-        // Retry with the owner's email
-        const fallbackPayload = {
-          from: fromEmail,
-          to: [TEST_MODE_EMAIL],
-          subject: `${subject} [INTENDED FOR: ${actualRecipient}]`,
-          html: `<div style="padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; color: #856404; margin-bottom: 20px;"><strong>⚠️ TEST MODE NOTICE:</strong> This email was intended for <strong>${actualRecipient}</strong> but was redirected to you because Resend's test domain can only send to the API key owner's email. To send to any recipient, verify your domain at <a href="https://resend.com/domains">resend.com/domains</a></div>` + html
-        };
-
-        const fallbackResponse = await fetch(`${RESEND_API_URL}/emails`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${RESEND_API_KEY}`
-          },
-          body: JSON.stringify(fallbackPayload)
-        });
-
-        const fallbackData = await fallbackResponse.json();
-
-        if (!fallbackResponse.ok) {
-          console.error('❌ Fallback email also failed:', fallbackData);
-          throw new Error(fallbackData.message || 'Failed to send email even to fallback address');
-        }
-
-        console.log('✅ Email sent successfully (to fallback address)!');
-        console.log('   Message ID:', fallbackData.id);
-        console.log(`   ⚠️ Check inbox at ${TEST_MODE_EMAIL}`);
-
-        return {
-          success: true,
-          messageId: fallbackData.id,
-          testMode: true,
-          intendedRecipient: actualRecipient,
-          actualRecipient: TEST_MODE_EMAIL
-        };
-      }
-
       console.error('❌ Resend API error:', responseData);
       console.error('   Status:', response.status);
       console.error('   Error details:', JSON.stringify(responseData, null, 2));
