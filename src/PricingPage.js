@@ -40,6 +40,45 @@ const PricingPage = () => {
             </p>
           </div>
 
+          {/* Risk-Free Guarantee Box */}
+          <div className="bg-gradient-to-br from-green-600/10 to-emerald-600/10 border-2 border-green-500/30 rounded-2xl p-8 mb-12">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 rounded-full mb-4">
+                <span className="text-2xl">💰</span>
+                <span className="text-xl font-bold text-green-400">Risk-Free Guarantee</span>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-1" />
+                <div>
+                  <span className="text-white font-semibold">Professional doesn't show?</span>
+                  <span className="text-gray-300"> Instant refund + free rebooking</span>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-1" />
+                <div>
+                  <span className="text-white font-semibold">Not satisfied?</span>
+                  <span className="text-gray-300"> Full credit refund within 48 hours</span>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-1" />
+                <div>
+                  <span className="text-white font-semibold">Unused credits?</span>
+                  <span className="text-gray-300"> 100% money back within 6 months</span>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-1" />
+                <div>
+                  <span className="text-white font-semibold">Payments secured by Stripe</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Pricing Cards - 3 Column Grid */}
           <div className="grid md:grid-cols-3 gap-8 mb-16 items-center">
             {/* CARD 1 - STARTER */}
@@ -51,8 +90,9 @@ const PricingPage = () => {
                 </div>
                 <div className="text-gray-500 text-sm">per interview</div>
               </div>
-              <div className="text-gray-400 text-sm leading-relaxed mb-6 h-12">
-                Perfect for testing the platform
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-3 py-2 mb-6">
+                <div className="text-xs text-blue-300 font-semibold mb-1">👤 BEST FOR:</div>
+                <div className="text-xs text-gray-300 leading-relaxed">Testing platform • Adding one expert source • Supplementing research</div>
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-2 text-sm text-gray-300">
@@ -95,8 +135,9 @@ const PricingPage = () => {
                   <span className="text-gray-400 text-xs">€26.33 each</span>
                 </div>
               </div>
-              <div className="text-gray-300 text-sm leading-relaxed mb-6 h-12">
-                Most students need 3-5 sources
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg px-3 py-2 mb-6">
+                <div className="text-xs text-blue-300 font-semibold mb-1">👥 BEST FOR:</div>
+                <div className="text-xs text-gray-200 leading-relaxed">Meeting thesis requirements (3-5 sources) • Comparing perspectives • Qualitative research</div>
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-2 text-sm text-gray-200">
@@ -135,8 +176,9 @@ const PricingPage = () => {
                   <span className="text-gray-500 text-xs">€25.80 each</span>
                 </div>
               </div>
-              <div className="text-gray-400 text-sm leading-relaxed mb-6 h-12">
-                Best for comprehensive research
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg px-3 py-2 mb-6">
+                <div className="text-xs text-purple-300 font-semibold mb-1">👥👥 BEST FOR:</div>
+                <div className="text-xs text-gray-300 leading-relaxed">MBA/Master's thesis • Multi-sector analysis • In-depth studies</div>
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-2 text-sm text-gray-300">
@@ -159,6 +201,16 @@ const PricingPage = () => {
               <a href="/register/student" className="block w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-semibold text-center transition-all">
                 Select
               </a>
+            </div>
+          </div>
+
+          {/* Advisory Note */}
+          <div className="text-center mb-16 px-4">
+            <div className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500/10 border border-blue-500/20 rounded-full">
+              <span className="text-xl">💡</span>
+              <span className="text-sm text-gray-300">
+                <strong className="text-white">Not sure how many?</strong> Most thesis committees expect 3-5 primary sources. Check with your supervisor.
+              </span>
             </div>
           </div>
 
