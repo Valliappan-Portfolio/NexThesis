@@ -29,7 +29,11 @@ export async function createMeetingRoom(options = {}) {
         privacy: 'public',
         properties: {
           exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60),
-          max_participants: 2
+          max_participants: 2,
+          enable_chat: true,
+          enable_screenshare: true
+          // Note: Cloud recording requires paid plan
+          // For local recording, users can use browser recording tools
         }
       })
     });
