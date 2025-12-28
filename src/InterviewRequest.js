@@ -11,7 +11,7 @@ const pricingTiers = [
 ];
 
 const InterviewRequest = ({ expert, onClose, onComplete }) => {
-  const [step, setStep] = useState(1); // 1: pricing selection, 2: date/time selection
+  const [step, setStep] = useState(1); // 1: pricing selection, 2: date/time + context selection
   const [selectedTier, setSelectedTier] = useState(null);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
@@ -20,6 +20,11 @@ const InterviewRequest = ({ expert, onClose, onComplete }) => {
   const [submitting, setSubmitting] = useState(false);
   const [credits, setCredits] = useState(null);
   const [loadingCredits, setLoadingCredits] = useState(true);
+
+  // New research context fields
+  const [researchQuestion, setResearchQuestion] = useState('');
+  const [interviewExpectations, setInterviewExpectations] = useState('');
+  const [specificQuestions, setSpecificQuestions] = useState('');
 
   // Load credits on component mount
   useEffect(() => {
@@ -133,6 +138,16 @@ const InterviewRequest = ({ expert, onClose, onComplete }) => {
       return;
     }
 
+    if (!researchQuestion.trim()) {
+      alert('Please provide your research question.');
+      return;
+    }
+
+    if (!interviewExpectations.trim()) {
+      alert('Please describe what you hope to gain from this interview.');
+      return;
+    }
+
     if (!expert || !expert.email) {
       alert('Expert information is missing. Please try again.');
       return;
@@ -156,6 +171,9 @@ const InterviewRequest = ({ expert, onClose, onComplete }) => {
         price: selectedTier.price,
         preferred_date: selectedDate,
         preferred_time: selectedTime,
+        research_question: researchQuestion,
+        interview_expectations: interviewExpectations,
+        specific_questions_for_expert: specificQuestions,
         status: 'matched' // Auto-match since time falls in availability window
       };
 
@@ -349,6 +367,57 @@ const InterviewRequest = ({ expert, onClose, onComplete }) => {
                   </p>
                 </div>
               )}
+
+              {/* Research Context Fields */}
+              <div className="pt-6 border-t border-white/10">
+                <h3 className="text-xl font-bold mb-4 text-white">Help {expert.first_name} Prepare</h3>
+                <p className="text-gray-400 text-sm mb-6">The more context you provide, the more valuable your interview will be.</p>
+
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-300">
+                      Your Research Question *
+                      <span className="text-gray-500 font-normal ml-1">(What are you investigating?)</span>
+                    </label>
+                    <textarea
+                      value={researchQuestion}
+                      onChange={(e) => setResearchQuestion(e.target.value)}
+                      placeholder="e.g., How do multinational corporations adapt their supply chain strategies in emerging markets?"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-all resize-none"
+                      rows="3"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-300">
+                      What do you hope to gain from this interview? *
+                    </label>
+                    <textarea
+                      value={interviewExpectations}
+                      onChange={(e) => setInterviewExpectations(e.target.value)}
+                      placeholder="e.g., I want to understand real-world challenges in supply chain management and how they differ from textbook theories..."
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-all resize-none"
+                      rows="3"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-300">
+                      Specific topics or questions for {expert.first_name}
+                      <span className="text-gray-500 font-normal ml-1">(Optional but recommended)</span>
+                    </label>
+                    <textarea
+                      value={specificQuestions}
+                      onChange={(e) => setSpecificQuestions(e.target.value)}
+                      placeholder="e.g., Given your experience at Nestlé, how did you handle supplier relationships during COVID-19? What frameworks do you use for risk assessment?"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-all resize-none"
+                      rows="4"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="mt-8 flex gap-4 justify-end">
