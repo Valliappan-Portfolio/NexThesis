@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Users, Shield, Star, LogIn, FileText, TrendingUp, Award, Zap, CheckCircle } from 'lucide-react';
+import { ArrowRight, LogIn, FileText, TrendingUp, Award, Zap, CheckCircle, Shield } from 'lucide-react';
 
 const LandingPage = () => {
   const [returningUser, setReturningUser] = useState(null);
@@ -97,11 +97,11 @@ const LandingPage = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <div className="relative pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto text-center">
+      {/* Hero Section - Centered and Welcoming */}
+      <div className="relative pt-32 sm:pt-40 md:pt-48 pb-16 sm:pb-24 px-4 sm:px-6 min-h-[80vh] flex items-center">
+        <div className="max-w-6xl mx-auto text-center w-full">
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight px-2" style={{ letterSpacing: '0.02em' }}>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 sm:mb-8 leading-tight px-2" style={{ letterSpacing: '0.02em' }}>
             Expert Interviews for
             <br />
             <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-blue-500 bg-clip-text text-transparent">
@@ -109,62 +109,46 @@ const LandingPage = () => {
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-4 max-w-3xl mx-auto leading-relaxed font-medium px-2">
+          <p className="text-lg sm:text-xl md:text-2xl text-gray-400 mb-8 sm:mb-10 max-w-3xl mx-auto leading-relaxed font-medium px-2">
             Connect with verified professionals from leading companies.<br className="hidden sm:block" />
             Structured 30-minute sessions to elevate your academic research.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col items-center gap-3 sm:gap-4 mb-12 sm:mb-20">
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-4 sm:px-0">
-              <a href="/register/student" className="group px-6 sm:px-10 py-4 sm:py-5 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all font-bold text-base sm:text-xl shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 pulse-glow" style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)' }}>
+          <div className="flex flex-col items-center gap-4 sm:gap-5">
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4 sm:px-0">
+              <a href="/register/student" className="group px-8 sm:px-12 py-4 sm:py-5 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all font-bold text-lg sm:text-xl shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 pulse-glow" style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)' }}>
                 I'm a Student
                 <ArrowRight className="w-5 sm:w-6 h-5 sm:h-6 group-hover:translate-x-1 transition-transform" />
               </a>
-              <a href="/register/professional" className="px-6 sm:px-10 py-4 sm:py-5 bg-purple-600 hover:bg-purple-500 rounded-xl transition-all font-bold text-base sm:text-xl shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2" style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)' }}>
+              <a href="/register/professional" className="px-8 sm:px-12 py-4 sm:py-5 bg-purple-600 hover:bg-purple-500 rounded-xl transition-all font-bold text-lg sm:text-xl shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2" style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)' }}>
                 I'm a Professional
                 <ArrowRight className="w-5 sm:w-6 h-5 sm:h-6 group-hover:translate-x-1 transition-transform" />
               </a>
             </div>
-            <div className="text-gray-500 text-xs sm:text-sm text-center px-4">
+            <div className="text-gray-500 text-sm sm:text-base text-center px-4">
               No subscription. Pay per interview. Start with one session.
             </div>
-            <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col items-center gap-3 mt-2">
               {returningUser ? (
                 <button
                   onClick={handleReturningUserClick}
                   className="px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition-all font-semibold text-sm flex items-center gap-2"
                 >
                   <LogIn className="w-4 h-4" />
-                  Already registered? Welcome back, {returningUser.firstName}!
+                  Welcome back, {returningUser.firstName}!
                 </button>
               ) : (
                 <>
                   <a href="/login" className="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all font-medium text-sm flex items-center gap-2 text-gray-300 hover:text-white">
                     <LogIn className="w-4 h-4" />
-                    Registered user already?
+                    Already registered?
                   </a>
                   <a href="/browse" className="text-gray-400 hover:text-white transition-colors text-sm font-medium">
                     Or browse experts without signing up →
                   </a>
                 </>
               )}
-            </div>
-          </div>
-
-          {/* Animated Stats */}
-          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-12 text-xs sm:text-sm px-4">
-            <div className="flex items-center justify-center gap-2 text-gray-400">
-              <Shield className="w-4 h-4 text-blue-400" />
-              <span>Verified Experts</span>
-            </div>
-            <div className="flex items-center justify-center gap-2 text-gray-400">
-              <Star className="w-4 h-4 text-blue-400" />
-              <span>30-Min Interviews</span>
-            </div>
-            <div className="flex items-center justify-center gap-2 text-gray-400">
-              <Users className="w-4 h-4 text-blue-400" />
-              <span>Growing Community</span>
             </div>
           </div>
         </div>
@@ -179,9 +163,9 @@ const LandingPage = () => {
             </h2>
           </div>
 
-          {/* Animated Company Carousel */}
-          <div className="relative overflow-hidden py-6 sm:py-8">
-            <div className="flex animate-scroll gap-12 sm:gap-16 items-center">
+          {/* Animated Company Carousel - Larger Logos */}
+          <div className="relative overflow-hidden py-8 sm:py-12">
+            <div className="flex animate-scroll gap-16 sm:gap-24 items-center">
               {[...companies, ...companies].map((company, idx) => (
                 <div
                   key={idx}
@@ -190,10 +174,10 @@ const LandingPage = () => {
                   <img
                     src={company.logo}
                     alt={company.name}
-                    className="h-8 sm:h-12 w-auto object-contain opacity-50 hover:opacity-100 transition-opacity"
+                    className="h-12 sm:h-16 md:h-20 w-auto object-contain opacity-50 hover:opacity-100 transition-opacity"
                     style={{ filter: 'brightness(0) invert(1)' }}
                     onError={(e) => {
-                      e.target.parentElement.innerHTML = `<span class="text-lg sm:text-2xl font-bold text-white/70 whitespace-nowrap">${company.name}</span>`;
+                      e.target.parentElement.innerHTML = `<span class="text-2xl sm:text-3xl font-bold text-white/70 whitespace-nowrap">${company.name}</span>`;
                     }}
                   />
                 </div>
@@ -208,8 +192,8 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 px-4">
-              From Interview to Citation in
-              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> 3 Steps</span>
+              How It Works —
+              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> Simple as 1-2-3</span>
             </h2>
           </div>
 
@@ -217,18 +201,18 @@ const LandingPage = () => {
             {[
               {
                 num: '1',
-                title: 'Browse & Book',
-                desc: 'Search by industry. Pick an expert. Choose a time slot. Pay securely. Get instant confirmation.'
+                title: 'Browse & Request',
+                desc: 'Find experts that match your thesis topic. Pick a time slot that works for you. Hit request and you\'re all set!'
               },
               {
                 num: '2',
-                title: 'Show Up & Interview',
-                desc: 'Join the video call. Have a structured 30-minute conversation. Everything is automatically recorded.'
+                title: 'Get Confirmed',
+                desc: 'Receive confirmation before you know it. Your expert is ready to share their insights with you.'
               },
               {
                 num: '3',
-                title: 'Download & Cite',
-                desc: 'Get your transcript within 24 hours. Copy quotes into your thesis. Use our citation format.'
+                title: 'Rinse & Repeat',
+                desc: 'Had a great session? Book another expert to get diverse perspectives and strengthen your research.'
               }
             ].map((step, idx) => (
               <div key={idx} className="relative group">
