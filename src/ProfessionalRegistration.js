@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Coffee, Home } from 'lucide-react';
+import { sendProfessionalWelcomeEmail } from './utils/resend';
 
 const ProfessionalRegistration = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -213,7 +214,21 @@ const ProfessionalRegistration = () => {
           role: formData.role,
           sector: formData.sector
         }));
-setSubmitted(true);
+
+        // Send welcome email
+        try {
+          await sendProfessionalWelcomeEmail({
+            professionalEmail: formData.email,
+            professionalName: `${formData.firstName} ${formData.lastName}`,
+            company: formData.company
+          });
+          console.log('✅ Welcome email sent to professional');
+        } catch (emailError) {
+          console.error('⚠️ Failed to send welcome email:', emailError);
+          // Don't block registration if email fails
+        }
+
+        setSubmitted(true);
       } catch (error) {
         // #region agent log
         fetch('http://127.0.0.1:7242/ingest/88699142-527f-44b9-9504-d1b4c088232e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ProfessionalRegistration.js:catch',message:'Error in handleSubmit',data:{errorMessage:error.message,timePreference:formData.timePreference,isArray:Array.isArray(formData.timePreference)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});

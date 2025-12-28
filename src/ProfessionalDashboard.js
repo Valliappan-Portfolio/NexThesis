@@ -89,7 +89,7 @@ const ProfessionalDashboard = () => {
       setRequests(requestsArray);
 
       // Calculate stats
-      const pending = requestsArray.filter(r => r.status === 'pending').length;
+      const pending = requestsArray.filter(r => r.status === 'pending' || r.status === 'matched').length;
       const confirmed = requestsArray.filter(r => r.status === 'confirmed' || r.status === 'approved').length;
       const declined = requestsArray.filter(r => r.status === 'declined').length;
 
@@ -172,7 +172,7 @@ const ProfessionalDashboard = () => {
     );
   }
 
-  const pendingRequests = requests.filter(r => r.status === 'pending');
+  const pendingRequests = requests.filter(r => r.status === 'pending' || r.status === 'matched');
   const confirmedRequests = requests.filter(r => r.status === 'confirmed' || r.status === 'approved');
 
   return (

@@ -244,6 +244,155 @@ export async function sendPaymentConfirmationEmail(details) {
 }
 
 /**
+ * Send welcome email to new student
+ */
+export async function sendStudentWelcomeEmail(details) {
+  const { studentEmail, studentName } = details;
+
+  const emailHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+    .button { display: inline-block; background: #667eea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+    .info-box { background: white; padding: 20px; border-left: 4px solid #667eea; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 Welcome to NexThesis!</h1>
+    </div>
+    <div class="content">
+      <p>Hi ${studentName},</p>
+
+      <p>Thank you for joining NexThesis! You're now part of a community of ambitious students conducting world-class research by interviewing industry professionals.</p>
+
+      <div class="info-box">
+        <h3>🚀 Next Steps</h3>
+        <ol>
+          <li><strong>Purchase Interview Credits</strong> - Choose a package that fits your thesis needs</li>
+          <li><strong>Browse Experts</strong> - Find professionals from Fortune 500 companies in your field</li>
+          <li><strong>Request Interviews</strong> - Book structured 30-minute sessions</li>
+          <li><strong>Conduct Research</strong> - Gather insights for your thesis</li>
+        </ol>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="https://www.nexthesis.com/buy-credits" class="button">Get Started - Buy Credits</a>
+      </div>
+
+      <div class="info-box">
+        <h3>💡 Tips for Success</h3>
+        <ul>
+          <li>Most thesis require 3-5 expert interviews</li>
+          <li>Prepare your research questions in advance</li>
+          <li>Each interview is recorded for your reference</li>
+          <li>Credits never expire - use them at your own pace</li>
+        </ul>
+      </div>
+
+      <p>Need help? Reply to this email or contact us at support@nexthesis.com</p>
+
+      <div class="footer">
+        <p>NexThesis - Connecting Students with Industry Experts</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  return sendEmail({
+    to: studentEmail,
+    subject: 'Welcome to NexThesis - Let\'s Get Started!',
+    html: emailHtml
+  });
+}
+
+/**
+ * Send welcome email to new professional
+ */
+export async function sendProfessionalWelcomeEmail(details) {
+  const { professionalEmail, professionalName, company } = details;
+
+  const emailHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+    .button { display: inline-block; background: #667eea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+    .info-box { background: white; padding: 20px; border-left: 4px solid #10b981; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>☕ Welcome to NexThesis!</h1>
+    </div>
+    <div class="content">
+      <p>Hi ${professionalName},</p>
+
+      <p>Thank you for joining NexThesis as a professional expert! Your industry experience will help shape the next generation of business leaders.</p>
+
+      <div class="info-box">
+        <h3>📋 How It Works</h3>
+        <ol>
+          <li><strong>Students find you</strong> - Your profile is now visible to students researching in your field</li>
+          <li><strong>Review requests</strong> - Check your dashboard for interview requests</li>
+          <li><strong>Confirm interviews</strong> - Accept requests that fit your schedule</li>
+          <li><strong>Share insights</strong> - 30-minute video interviews to help students with their thesis</li>
+        </ol>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="https://www.nexthesis.com/professional/dashboard" class="button">View Dashboard</a>
+      </div>
+
+      <div class="info-box">
+        <h3>💼 Your Profile</h3>
+        <p><strong>Company:</strong> ${company || 'Not specified'}</p>
+        <p>Students will reach out based on your industry expertise and company background.</p>
+      </div>
+
+      <p><strong>What to expect:</strong></p>
+      <ul>
+        <li>You'll receive email notifications when students request interviews</li>
+        <li>All interviews are scheduled at your convenience</li>
+        <li>Each session is 30 minutes via video call</li>
+        <li>You're helping students conduct academic research</li>
+      </ul>
+
+      <p>Questions? Reply to this email or contact us at support@nexthesis.com</p>
+
+      <div class="footer">
+        <p>Thank you for supporting student researchers!</p>
+        <p>NexThesis - Connecting Students with Industry Experts</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  return sendEmail({
+    to: professionalEmail,
+    subject: 'Welcome to NexThesis - Share Your Expertise',
+    html: emailHtml
+  });
+}
+
+/**
  * Core email sending function using Resend API
  */
 async function sendEmail({ to, subject, html }) {

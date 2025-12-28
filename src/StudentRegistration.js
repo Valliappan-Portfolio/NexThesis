@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, CheckCircle, Sparkles, Home } from 'lucide-react';
+import { sendStudentWelcomeEmail } from './utils/resend';
 
 const StudentRegistration = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -111,7 +112,20 @@ const StudentRegistration = () => {
           university: formData.university,
           thesisTopic: formData.thesisTopic
         }));
-setSubmitted(true);
+
+        // Send welcome email
+        try {
+          await sendStudentWelcomeEmail({
+            studentEmail: formData.email,
+            studentName: `${formData.firstName} ${formData.lastName}`
+          });
+          console.log('✅ Welcome email sent to student');
+        } catch (emailError) {
+          console.error('⚠️ Failed to send welcome email:', emailError);
+          // Don't block registration if email fails
+        }
+
+        setSubmitted(true);
       } catch (error) {
         alert('Error saving registration. Please try again.');
         console.error('Error:', error);

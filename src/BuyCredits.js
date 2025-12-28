@@ -137,7 +137,7 @@ const BuyCredits = () => {
 
       // Redirect to Browse Experts page
       setTimeout(() => {
-        window.location.href = '/browse-experts';
+        window.location.href = '/browse';
       }, 1500);
     } catch (error) {
       console.error('❌ Purchase error:', error);
