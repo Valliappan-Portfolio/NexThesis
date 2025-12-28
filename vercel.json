@@ -1,0 +1,11 @@
+{
+  "env": {
+    "RESEND_API_KEY": "re_GXtTz3u1_LJknyz8HMVAnoLWbWcuX3YQ6"
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

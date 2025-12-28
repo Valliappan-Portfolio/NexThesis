@@ -1,7 +1,5 @@
 // Resend Email Integration
-
-const RESEND_API_KEY = process.env.REACT_APP_RESEND_API_KEY || 're_GXtTz3u1_LJknyz8HMVAnoLWbWcuX3YQ6';
-const RESEND_API_URL = 'https://api.resend.com';
+// Note: Emails are sent via serverless function at /api/send-email to avoid CORS issues
 
 /**
  * Send confirmation email to student
@@ -401,23 +399,21 @@ async function sendEmail({ to, subject, html }) {
     console.log('   To:', to);
     console.log('   Subject:', subject);
 
-    // Using verified domain: nexthesis.com
-    const fromEmail = 'noreply@nexthesis.com';
+    // Call our serverless function instead of Resend API directly (to avoid CORS)
+    const apiEndpoint = '/api/send-email';
 
     const emailPayload = {
-      from: fromEmail,
-      to: [to],
+      to: to,
       subject: subject,
       html: html
     };
 
-    console.log('   From:', fromEmail);
+    console.log('   Calling serverless function:', apiEndpoint);
 
-    const response = await fetch(`${RESEND_API_URL}/emails`, {
+    const response = await fetch(apiEndpoint, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${RESEND_API_KEY}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(emailPayload)
     });
@@ -425,18 +421,18 @@ async function sendEmail({ to, subject, html }) {
     const responseData = await response.json();
 
     if (!response.ok) {
-      console.error('❌ Resend API error:', responseData);
+      console.error('❌ Email API error:', responseData);
       console.error('   Status:', response.status);
       console.error('   Error details:', JSON.stringify(responseData, null, 2));
-      throw new Error(responseData.message || 'Failed to send email');
+      throw new Error(responseData.error || 'Failed to send email');
     }
 
     console.log('✅ Email sent successfully!');
-    console.log('   Message ID:', responseData.id);
+    console.log('   Message ID:', responseData.messageId);
 
     return {
       success: true,
-      messageId: responseData.id
+      messageId: responseData.messageId
     };
   } catch (error) {
     console.error('❌ Error sending email:', error.message);
