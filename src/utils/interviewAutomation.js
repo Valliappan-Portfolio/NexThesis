@@ -1,6 +1,6 @@
 // Interview Automation - Triggers meeting creation and email sending
 
-import { createMeetingRoom } from './dailyco';
+import { createMeetingRoom } from './jitsi';
 import { sendStudentConfirmationEmail, sendProfessionalConfirmationEmail } from './resend';
 import { deductCredit } from './creditSystem';
 
@@ -41,8 +41,8 @@ export async function confirmInterviewAutomation(requestId, scheduledDetails = {
       console.warn('⚠️ Continuing without credit deduction (testing mode)');
     }
 
-    // Step 3: Create Daily.co meeting room
-    console.log('Creating Daily.co meeting room...');
+    // Step 3: Create Jitsi meeting room
+    console.log('Creating Jitsi meeting room...');
     const meeting = await createMeetingRoom({
       studentName: request.student_name,
       professionalName: request.professional_name,

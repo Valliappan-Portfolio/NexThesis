@@ -69,7 +69,7 @@ export async function sendStudentConfirmationEmail(details) {
       <p><strong>Meeting Link:</strong><br>
       <a href="${meetingLink}">${meetingLink}</a></p>
 
-      <p>The meeting will be automatically recorded for your reference.</p>
+      <p>You can record the meeting locally using your browser for your reference.</p>
 
       <div class="footer">
         <p>Questions? Reply to this email or contact us at support@nexthesis.com</p>
@@ -150,7 +150,7 @@ export async function sendProfessionalConfirmationEmail(details) {
       <p><strong>Meeting Link:</strong><br>
       <a href="${meetingLink}">${meetingLink}</a></p>
 
-      <p>The meeting will be automatically recorded. Payment will be processed after the interview is completed.</p>
+      <p>You can record the meeting locally using your browser if needed. Payment will be processed after the interview is completed.</p>
 
       <div class="footer">
         <p>Questions? Reply to this email or contact us at support@nexthesis.com</p>

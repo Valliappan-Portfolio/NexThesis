@@ -392,7 +392,7 @@ const ProfessionalDashboard = () => {
                   <>
                     <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
                       <p className="text-sm text-blue-200">
-                        💡 <strong>Note:</strong> After confirming, a Daily.co video meeting will be created and both you and the student will receive confirmation emails with the meeting link.
+                        💡 <strong>Note:</strong> After confirming, a Jitsi Meet video meeting will be created and both you and the student will receive confirmation emails with the meeting link.
                       </p>
                     </div>
 
