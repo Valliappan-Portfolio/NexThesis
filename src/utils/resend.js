@@ -15,7 +15,8 @@ export async function sendStudentConfirmationEmail(details) {
     scheduledTime,
     duration = 30,
     thesisTopic,
-    timezone
+    timezone,
+    professionalMessage
   } = details;
 
   const emailHtml = `
@@ -41,6 +42,13 @@ export async function sendStudentConfirmationEmail(details) {
       <p>Hi ${studentName},</p>
 
       <p>Great news! Your interview request has been confirmed.</p>
+
+      ${professionalMessage ? `
+      <div class="info-box" style="background: #f0f9ff; border-left: 4px solid #3b82f6;">
+        <h3 style="margin-top: 0; color: #1e40af;">💬 Message from ${professionalName}</h3>
+        <p style="white-space: pre-wrap; color: #1f2937;">${professionalMessage}</p>
+      </div>
+      ` : ''}
 
       <div class="info-box">
         <h3>📅 Interview Details</h3>
@@ -166,6 +174,83 @@ export async function sendProfessionalConfirmationEmail(details) {
   return sendEmail({
     to: professionalEmail,
     subject: `Interview Scheduled with ${studentName} - ${scheduledDate}`,
+    html: emailHtml
+  });
+}
+
+/**
+ * Send decline notification email to student
+ */
+export async function sendDeclineEmail(details) {
+  const {
+    studentEmail,
+    studentName,
+    professionalName,
+    professionalCompany,
+    professionalMessage,
+    thesisTopic
+  } = details;
+
+  const emailHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #f59e0b 0%, #dc2626 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+    .info-box { background: white; padding: 20px; border-left: 4px solid #667eea; margin: 20px 0; }
+    .message-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+    .button { display: inline-block; background: #667eea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📋 Interview Request Update</h1>
+    </div>
+    <div class="content">
+      <p>Hi ${studentName},</p>
+
+      <p>Unfortunately, ${professionalName} from ${professionalCompany} is unable to accept your interview request at this time.</p>
+
+      ${professionalMessage ? `
+      <div class="message-box">
+        <h3 style="margin-top: 0; color: #b45309;">💬 Message from ${professionalName}</h3>
+        <p style="white-space: pre-wrap; color: #1f2937;">${professionalMessage}</p>
+      </div>
+      ` : ''}
+
+      <div class="info-box">
+        <h3>🔍 What's Next?</h3>
+        <p>Don't worry! You still have options:</p>
+        <ul>
+          <li><strong>Browse other experts</strong> - We have many professionals ready to help</li>
+          <li><strong>Try again later</strong> - The professional might have different availability</li>
+          <li><strong>Refine your request</strong> - Consider adjusting your schedule or topic focus</li>
+        </ul>
+        ${thesisTopic ? `<p><strong>Your Thesis Topic:</strong> ${thesisTopic}</p>` : ''}
+      </div>
+
+      <div style="text-align: center;">
+        <a href="https://www.nexthesis.com/browse" class="button">Browse Other Experts</a>
+      </div>
+
+      <div class="footer">
+        <p>Questions? Reply to this email or contact us at support@nexthesis.com</p>
+        <p>NexThesis - Connecting Students with Industry Experts</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  return sendEmail({
+    to: studentEmail,
+    subject: `Interview Request Update - ${professionalName}`,
     html: emailHtml
   });
 }

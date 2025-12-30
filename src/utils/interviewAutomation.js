@@ -90,7 +90,8 @@ export async function confirmInterviewAutomation(requestId, scheduledDetails = {
         scheduledTime: scheduledDetails.time || 'To be confirmed',
         duration: 30,
         thesisTopic: request.student_thesis_topic,
-        timezone: request.student_timezone || 'UTC'
+        timezone: request.student_timezone || 'UTC',
+        professionalMessage: request.professional_message || null
       });
       console.log('✅ Student email sent');
     } catch (emailError) {

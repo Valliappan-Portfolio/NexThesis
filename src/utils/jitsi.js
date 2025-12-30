@@ -14,19 +14,14 @@ export async function createMeetingRoom(options = {}) {
     const { studentName, professionalName, scheduledDate, scheduledTime } = options;
 
     // Generate a unique room name
-    const roomName = `interview-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const roomName = `interview-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 
     console.log('Creating Jitsi meeting room:', roomName);
 
-    // Construct the Jitsi URL
-    const roomUrl = `https://${JITSI_DOMAIN}/${roomName}`;
-
-    // Optional: Add URL parameters for room configuration if needed
-    // const configParams = new URLSearchParams({
-    //   '#config.startWithAudioMuted': 'false',
-    //   '#config.startWithVideoMuted': 'false',
-    //   '#config.prejoinPageEnabled': 'true', // Show preview page before joining
-    // });
+    // Construct the Jitsi URL with config to avoid moderator sign-in prompt
+    // userInfo.displayName sets participant name
+    // config.startWithAudioMuted/startWithVideoMuted control initial state
+    const roomUrl = `https://${JITSI_DOMAIN}/${roomName}#config.startWithAudioMuted=false&config.startWithVideoMuted=false`;
 
     console.log('Jitsi meeting room created:', roomUrl);
 

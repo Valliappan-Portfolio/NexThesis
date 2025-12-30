@@ -48,6 +48,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         from: 'noreply@nexthesis.com',
+        reply_to: 'support@nexthesis.com',
         to: [to],
         subject: subject,
         html: html
