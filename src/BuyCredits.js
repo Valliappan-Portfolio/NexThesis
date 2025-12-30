@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CheckCircle, CreditCard, Home, LogOut, Sparkles } from 'lucide-react';
 import { getCreditSummary, addCredits } from './utils/creditSystem';
 import { sendPaymentConfirmationEmail } from './utils/resend';
-import { simulateTestPayment } from './utils/stripe';
+import { redirectToCheckout } from './utils/stripe';
 
 const BuyCredits = () => {
   const [userData, setUserData] = useState(null);
@@ -95,50 +95,11 @@ const BuyCredits = () => {
         studentName: `${userData.firstName} ${userData.lastName}`
       };
 
-      // Process payment via Stripe (test mode)
-      const paymentResult = await simulateTestPayment(packageDetails, async (email, name, bundle, price, interviews) => {
-        await addCredits(email, name, bundle, price, interviews);
-      });
+      console.log('Redirecting to Stripe Checkout...');
 
-      // Handle payment result
-      if (paymentResult.cancelled) {
-        console.log('Payment cancelled by user');
-        return;
-      }
-
-      if (!paymentResult.success) {
-        throw new Error(paymentResult.error || 'Payment failed');
-      }
-
-      console.log('✅ Payment successful! Credits added.');
-
-      // Send confirmation email
-      try {
-        await sendPaymentConfirmationEmail({
-          studentEmail: userData.email,
-          studentName: `${userData.firstName} ${userData.lastName}`,
-          bundleName: pkg.name,
-          amount: pkg.price,
-          interviewsPurchased: pkg.interviews,
-          creditsAvailable: creditSummary.creditsAvailable + pkg.interviews
-        });
-        console.log('✅ Confirmation email sent!');
-      } catch (emailError) {
-        console.error('⚠️ Email sending failed:', emailError);
-        // Don't block the purchase if email fails
-      }
-
-      // Reload credits
-      await loadCredits(userData.email);
-
-      alert(`Success! ${pkg.interviews} interview credits added to your account. Redirecting to Browse Experts...`);
-
-      console.log('========== PURCHASE COMPLETE ==========');
-
-      // Redirect to Browse Experts page
-      setTimeout(() => {
-        window.location.href = '/browse';
-      }, 1500);
+      // Redirect to Stripe Checkout
+      // The webhook will handle adding credits after successful payment
+      await redirectToCheckout(packageDetails);
     } catch (error) {
       console.error('❌ Purchase error:', error);
       alert('Purchase failed. Please try again.');
