@@ -58,52 +58,49 @@ export async function redirectToCheckout(packageDetails) {
 }
 
 /**
- * Create checkout session (client-side for testing)
- * In production, this should be done server-side
+ * Create checkout session by calling our serverless function
  */
 async function createCheckoutSession(packageDetails) {
   const { name, price, interviews, studentEmail, studentName } = packageDetails;
 
-  // For test mode, we'll use Stripe's Payment Links feature
-  // This is the simplest way to test without a backend
+  console.log('📞 Calling serverless function to create checkout session...');
+  console.log('Package details:', { name, price, interviews, studentEmail });
 
-  // Convert to cents (Stripe uses smallest currency unit)
-  const amountInCents = Math.round(price * 100);
+  try {
+    // Call our serverless function
+    const response = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        packageName: name,
+        price: price,
+        interviews: interviews,
+        studentEmail: studentEmail,
+        studentName: studentName
+      })
+    });
 
-  console.log('Package details:', {
-    name,
-    price,
-    interviews,
-    amountInCents,
-    studentEmail
-  });
+    const data = await response.json();
 
-  // Return a test checkout URL
-  // In production, you'd call your backend API here
-  return {
-    url: createTestCheckoutUrl(packageDetails),
-    metadata: {
-      studentEmail,
-      studentName,
-      bundleName: name,
-      interviews,
-      amount: price
+    if (!response.ok) {
+      console.error('❌ Checkout creation failed:', data);
+      throw new Error(data.error || 'Failed to create checkout session');
     }
-  };
-}
 
-/**
- * Create a test checkout URL (for development without backend)
- */
-function createTestCheckoutUrl(packageDetails) {
-  const { name, price } = packageDetails;
+    console.log('✅ Checkout session created successfully!');
+    console.log('   Session ID:', data.sessionId);
+    console.log('   Checkout URL:', data.url);
 
-  // For now, return to a success page with query params
-  // In production, this would be a real Stripe checkout URL
-  const baseUrl = window.location.origin;
-  const successUrl = `${baseUrl}/payment-success?package=${encodeURIComponent(name)}&amount=${price}`;
-
-  return successUrl;
+    return {
+      id: data.sessionId,
+      url: data.url
+    };
+  } catch (error) {
+    console.error('❌ Error creating checkout session:', error);
+    throw error;
+  }
 }
 
 /**
