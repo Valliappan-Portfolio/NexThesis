@@ -2,9 +2,20 @@
 // This runs on the server, so your secret key stays safe
 
 import Stripe from 'stripe';
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
+  // Check if Stripe key exists FIRST
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('CRITICAL: STRIPE_SECRET_KEY environment variable is not set!');
+    console.error('Available env vars:', Object.keys(process.env).join(', '));
+    return res.status(500).json({
+      error: 'Stripe is not configured. Please add STRIPE_SECRET_KEY to Vercel environment variables.',
+      hint: 'Go to Vercel Dashboard → Settings → Environment Variables'
+    });
+  }
+
+  // Initialize Stripe AFTER checking the key exists
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
