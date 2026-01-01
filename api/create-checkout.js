@@ -26,10 +26,17 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log('=== CREATE CHECKOUT REQUEST ===');
+    console.log('Method:', req.method);
+    console.log('Body:', JSON.stringify(req.body));
+    console.log('Stripe key exists:', !!process.env.STRIPE_SECRET_KEY);
+    console.log('Stripe key prefix:', process.env.STRIPE_SECRET_KEY?.substring(0, 10));
+
     const { packageName, price, interviews, studentEmail, studentName } = req.body;
 
     // Validate input
     if (!packageName || !price || !interviews || !studentEmail) {
+      console.error('Missing required fields');
       return res.status(400).json({
         error: 'Missing required fields: packageName, price, interviews, studentEmail'
       });
@@ -79,9 +86,15 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error('Error creating checkout session:', error);
+    console.error('=== ERROR ===');
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+
     return res.status(500).json({
-      error: error.message || 'Failed to create checkout session'
+      error: error.message || 'Failed to create checkout session',
+      errorName: error.name,
+      errorDetails: error.toString()
     });
   }
 }
