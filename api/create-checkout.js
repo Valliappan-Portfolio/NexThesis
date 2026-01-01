@@ -1,7 +1,8 @@
 // Vercel Serverless Function to create Stripe checkout sessions
 // This runs on the server, so your secret key stays safe
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+import Stripe from 'stripe';
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
   // Enable CORS

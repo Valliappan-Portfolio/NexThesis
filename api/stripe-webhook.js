@@ -1,7 +1,8 @@
 // Vercel Serverless Function to handle Stripe webhooks
 // This receives notifications when payments succeed
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+import Stripe from 'stripe';
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Supabase credentials
 const SUPABASE_URL = 'https://bpupukmduvbzyywbcngj.supabase.co';
