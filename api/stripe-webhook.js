@@ -281,7 +281,11 @@ async function sendPaymentConfirmationEmail({ studentEmail, studentName, package
     `;
 
     // Call the send-email API
-    const response = await fetch(`${process.env.VERCEL_URL || 'https://nexthesis.vercel.app'}/api/send-email`, {
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'https://www.nexthesis.com';
+
+    const response = await fetch(`${baseUrl}/api/send-email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
