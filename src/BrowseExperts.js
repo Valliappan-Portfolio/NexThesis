@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ArrowRight, CheckCircle, Filter, X } from 'lucide-react';
 import InterviewRequest from './InterviewRequest';
+import VerificationGate from './components/VerificationGate';
+import { isEmailVerified } from './utils/emailVerification';
 
 
 
@@ -18,10 +20,20 @@ const BrowseExpertsPage = () => {
   const [expandedFilter, setExpandedFilter] = useState(null);
   const [experts, setExperts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showVerificationGate, setShowVerificationGate] = useState(false);
+  const [userVerified, setUserVerified] = useState(false);
 
   useEffect(() => {
     fetchExperts();
+    checkUserVerification();
   }, []);
+
+  const checkUserVerification = async () => {
+    if (storedUser && storedUser.email) {
+      const verified = await isEmailVerified(storedUser.email, storedUser.type || 'student');
+      setUserVerified(verified);
+    }
+  };
 
   const fetchExperts = async () => {
     try {
@@ -392,8 +404,12 @@ const BrowseExpertsPage = () => {
                 View Full Profile
                 <ArrowRight className="w-5 h-5" />
               </button>
-              <button 
+              <button
                 onClick={() => {
+                  if (!userVerified) {
+                    setShowVerificationGate(true);
+                    return;
+                  }
                   setShowFullProfile(true);
                   setTimeout(() => setShowInterviewRequest(true), 100);
                 }}
@@ -512,8 +528,14 @@ const BrowseExpertsPage = () => {
               )}
             </div>
 
-            <button 
-              onClick={() => setShowInterviewRequest(true)}
+            <button
+              onClick={() => {
+                if (!userVerified) {
+                  setShowVerificationGate(true);
+                  return;
+                }
+                setShowInterviewRequest(true);
+              }}
               className="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-lg transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
             >
               Request Interview
@@ -540,12 +562,12 @@ const BrowseExpertsPage = () => {
               expert_name: `${data.expert?.first_name || ''} ${data.expert?.last_name || ''}`.trim(),
               expert_email: data.expert?.email || ''
             };
-            
+
             // Save to professional's requests
             const proRequests = JSON.parse(localStorage.getItem(`interview_requests_${data.expert.email}`) || '[]');
             proRequests.push(request);
             localStorage.setItem(`interview_requests_${data.expert.email}`, JSON.stringify(proRequests));
-            
+
             alert(`Interview request submitted! ${data.expert?.first_name || 'The expert'} will review your request and confirm the time slot. Payment will only be processed after confirmation.`);
             setShowInterviewRequest(false);
             setShowFullProfile(false);
@@ -553,6 +575,12 @@ const BrowseExpertsPage = () => {
           }}
         />
       )}
+
+      <VerificationGate
+        isOpen={showVerificationGate}
+        onClose={() => setShowVerificationGate(false)}
+        userEmail={storedUser?.email}
+      />
     </div>
   );
 };

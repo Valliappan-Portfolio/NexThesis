@@ -3,12 +3,16 @@ import { CheckCircle, CreditCard, Home, LogOut, Sparkles } from 'lucide-react';
 import { getCreditSummary, addCredits } from './utils/creditSystem';
 import { sendPaymentConfirmationEmail } from './utils/resend';
 import { redirectToCheckout } from './utils/stripe';
+import VerificationGate from './components/VerificationGate';
+import { isEmailVerified } from './utils/emailVerification';
 
 const BuyCredits = () => {
   const [userData, setUserData] = useState(null);
   const [creditSummary, setCreditSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
+  const [showVerificationGate, setShowVerificationGate] = useState(false);
+  const [userVerified, setUserVerified] = useState(false);
 
   const packages = [
     {
@@ -53,6 +57,7 @@ const BuyCredits = () => {
         if (data.type === 'student') {
           setUserData(data);
           loadCredits(data.email);
+          checkUserVerification(data.email, data.type);
         } else {
           window.location.href = '/';
         }
@@ -63,6 +68,11 @@ const BuyCredits = () => {
       window.location.href = '/';
     }
   }, []);
+
+  const checkUserVerification = async (email, type) => {
+    const verified = await isEmailVerified(email, type || 'student');
+    setUserVerified(verified);
+  };
 
   const loadCredits = async (email) => {
     try {
@@ -78,6 +88,12 @@ const BuyCredits = () => {
 
   const handlePurchase = async (pkg) => {
     if (!userData || purchasing) return;
+
+    // Check if user is verified
+    if (!userVerified) {
+      setShowVerificationGate(true);
+      return;
+    }
 
     try {
       setPurchasing(true);
@@ -265,6 +281,12 @@ const BuyCredits = () => {
           </div>
         </div>
       </div>
+
+      <VerificationGate
+        isOpen={showVerificationGate}
+        onClose={() => setShowVerificationGate(false)}
+        userEmail={userData?.email}
+      />
     </div>
   );
 };
