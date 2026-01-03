@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Coffee, Home, Eye, X, CheckCircle } from 'lucide-react';
+import { ArrowRight, Coffee, Home, Eye, X, CheckCircle, ChevronDown } from 'lucide-react';
 import { sendProfessionalWelcomeEmail } from './utils/resend';
 
 const ProfessionalRegistration = () => {
   const [submitted, setSubmitted] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -528,7 +529,9 @@ const ProfessionalRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-3 text-gray-300">Expertise Domains * (Select all that apply)</label>
+                <label className="block text-sm font-medium mb-3 text-gray-300">
+                  Where can you help students? * <span className="text-gray-500 font-normal">(Select all expertise areas that apply)</span>
+                </label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-80 overflow-y-auto p-4 bg-white/5 rounded-xl border border-white/10">
                   {expertiseDomains.map(domain => {
                     const isSelected = formData.expertiseDomains.includes(domain);
@@ -556,8 +559,8 @@ const ProfessionalRegistration = () => {
                 {errors.expertiseDomains && <p className="text-red-400 text-xs mt-1">{errors.expertiseDomains}</p>}
                 <p className="text-gray-500 text-xs mt-1">
                   {formData.expertiseDomains.length === 0
-                    ? 'Select domains where you have expertise'
-                    : `${formData.expertiseDomains.length} domain${formData.expertiseDomains.length > 1 ? 's' : ''} selected`}
+                    ? 'Select all areas where you can guide students'
+                    : `${formData.expertiseDomains.length} area${formData.expertiseDomains.length > 1 ? 's' : ''} selected`}
                 </p>
               </div>
 
@@ -594,38 +597,72 @@ const ProfessionalRegistration = () => {
                 </p>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-3 text-gray-300">Languages * (Select all that apply)</label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-white/5 rounded-xl border border-white/10">
-                  {languageOptions.map(language => {
-                    const isSelected = formData.languages.includes(language);
-                    return (
-                      <button
-                        key={language}
-                        type="button"
-                        onClick={() => {
-                          const newLanguages = isSelected
-                            ? formData.languages.filter(l => l !== language)
-                            : [...formData.languages, language];
-                          handleChange('languages', newLanguages);
-                        }}
-                        className={`px-3 py-2 rounded-lg border-2 transition-all text-xs font-medium ${
-                          isSelected
-                            ? 'border-green-500 bg-green-500/20 text-white'
-                            : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:bg-white/10'
-                        }`}
-                      >
-                        {language}
-                      </button>
-                    );
-                  })}
-                </div>
+              <div className="relative">
+                <label className="block text-sm font-medium mb-2 text-gray-300">Languages * (Select all that apply)</label>
+                <button
+                  type="button"
+                  onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+                  className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-left transition-all flex items-center justify-between ${
+                    errors.languages ? 'border-red-500' : 'border-white/20 hover:border-blue-500'
+                  }`}
+                >
+                  <span className={formData.languages.length === 0 ? 'text-gray-500' : 'text-white'}>
+                    {formData.languages.length === 0
+                      ? 'Select languages...'
+                      : `${formData.languages.length} language${formData.languages.length > 1 ? 's' : ''} selected`}
+                  </span>
+                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${showLanguageDropdown ? 'rotate-180' : ''}`} />
+                </button>
+
+                {showLanguageDropdown && (
+                  <div className="absolute z-10 w-full mt-2 bg-gray-900 border border-white/20 rounded-xl shadow-2xl max-h-64 overflow-y-auto">
+                    {languageOptions.map(language => {
+                      const isSelected = formData.languages.includes(language);
+                      return (
+                        <button
+                          key={language}
+                          type="button"
+                          onClick={() => {
+                            const newLanguages = isSelected
+                              ? formData.languages.filter(l => l !== language)
+                              : [...formData.languages, language];
+                            handleChange('languages', newLanguages);
+                          }}
+                          className="w-full px-4 py-3 hover:bg-white/10 transition-all flex items-center gap-3 text-left border-b border-white/5 last:border-b-0"
+                        >
+                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                            isSelected ? 'border-green-500 bg-green-500' : 'border-gray-500'
+                          }`}>
+                            {isSelected && (
+                              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                          <span className={isSelected ? 'text-white font-medium' : 'text-gray-400'}>{language}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
                 {errors.languages && <p className="text-red-400 text-xs mt-1">{errors.languages}</p>}
-                <p className="text-gray-500 text-xs mt-1">
-                  {formData.languages.length === 0
-                    ? 'Select languages you can conduct interviews in'
-                    : `${formData.languages.length} language${formData.languages.length > 1 ? 's' : ''} selected`}
-                </p>
+                {formData.languages.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.languages.map(lang => (
+                      <span key={lang} className="px-2 py-1 bg-green-500/20 border border-green-500/30 text-green-400 rounded text-xs font-medium flex items-center gap-1">
+                        {lang}
+                        <button
+                          type="button"
+                          onClick={() => handleChange('languages', formData.languages.filter(l => l !== lang))}
+                          className="hover:text-green-300"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6 mt-6">
