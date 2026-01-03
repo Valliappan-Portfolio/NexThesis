@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Coffee, Home, Eye, X, CheckCircle, ChevronDown } from 'lucide-react';
-import { sendProfessionalWelcomeEmail } from './utils/resend';
 
 const ProfessionalRegistration = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -88,15 +87,6 @@ const ProfessionalRegistration = () => {
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
-
-  const validateURL = (url) => {
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
   };
 
   const validateForm = () => {
@@ -809,10 +799,9 @@ const ProfessionalRegistration = () => {
           </div>
         </div>
       </div>
-    </div>
 
-    {/* Profile Preview Modal */}
-    {showPreview && (
+      {/* Profile Preview Modal */}
+      {showPreview && (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6" onClick={() => setShowPreview(false)}>
         <div className="bg-gradient-to-br from-gray-900 to-black border border-white/20 rounded-3xl max-w-2xl w-full p-8 relative" onClick={(e) => e.stopPropagation()}>
           <button
@@ -896,8 +885,8 @@ const ProfessionalRegistration = () => {
           </button>
         </div>
       </div>
-    )}
-  </div>
+      )}
+    </div>
   );
 };
 
