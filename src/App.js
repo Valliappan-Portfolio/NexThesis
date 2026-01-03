@@ -12,6 +12,7 @@ import ProfessionalRequests from './ProfessionalRequests';
 import ProfessionalDashboard from './ProfessionalDashboard';
 import BuyCredits from './BuyCredits';
 import PaymentSuccess from './PaymentSuccess';
+import EmailVerification from './EmailVerification';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/buy-credits" element={<BuyCredits />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/verify-email" element={<EmailVerification />} />
         <Route path="/professional/requests" element={<ProfessionalRequests />} />
         <Route path="/professional/dashboard" element={<ProfessionalDashboard />} />
       </Routes>

@@ -113,15 +113,17 @@ const StudentRegistration = () => {
           thesisTopic: formData.thesisTopic
         }));
 
-        // Send welcome email
+        // Send verification email
         try {
-          await sendStudentWelcomeEmail({
-            studentEmail: formData.email,
-            studentName: `${formData.firstName} ${formData.lastName}`
-          });
-          console.log('✅ Welcome email sent to student');
+          const { sendVerificationEmail } = await import('./utils/emailVerification');
+          await sendVerificationEmail(
+            formData.email,
+            `${formData.firstName} ${formData.lastName}`,
+            'student'
+          );
+          console.log('✅ Verification email sent to student');
         } catch (emailError) {
-          console.error('⚠️ Failed to send welcome email:', emailError);
+          console.error('⚠️ Failed to send verification email:', emailError);
           // Don't block registration if email fails
         }
 
@@ -194,11 +196,11 @@ const StudentRegistration = () => {
             </div>
 
             <h1 className="text-4xl font-bold mb-4">
-              You're All Set! 🎉
+              Check Your Email! 📧
             </h1>
-            
+
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-              Your profile is live! Get ready to find the perfect expert who'll make your thesis supervisor say <span className="text-blue-400 font-semibold">"Now that's proper research!"</span>
+              We've sent a verification link to <span className="text-blue-400 font-semibold">{formData.email}</span>
             </p>
 
             <div className="bg-white/10 rounded-2xl p-6 mb-8 text-left">
@@ -207,17 +209,17 @@ const StudentRegistration = () => {
                 <div>
                   <h3 className="font-semibold mb-2">What's Next?</h3>
                   <p className="text-gray-300 text-sm leading-relaxed">
-                    Browse verified experts from top companies. Find someone who actually does what you're researching (not just writes about it). Send requests. Book interviews. Cite real expertise.
+                    Click the verification link in your email to activate your account. Then you'll be able to browse verified experts from top companies and book interviews for your thesis research!
                   </p>
                 </div>
               </div>
             </div>
 
             <a
-              href="/browse"
+              href="/login"
               className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-lg transition-all shadow-lg shadow-blue-500/30"
             >
-              Start Hunting for Experts
+              Go to Login
               <ArrowRight className="w-5 h-5" />
             </a>
 
