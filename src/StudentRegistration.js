@@ -240,7 +240,7 @@ const StudentRegistration = () => {
       <nav className="fixed top-0 w-full bg-black/50 backdrop-blur-xl border-b border-white/10 z-50">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg"></div>
+            <img src="/logo.png" alt="NexThesis" className="w-8 h-8" />
             <span className="text-xl font-bold">NexThesis</span>
           </a>
           <div className="flex gap-4 items-center">

@@ -11,11 +11,10 @@ const ProfessionalRegistration = () => {
     linkedin: '',
     company: '',
     role: '',
-    sector: '',
+    expertiseDomains: [],
     experience: '',
     bio: '',
-    bookingLink: '',
-    languages: '',
+    languages: [],
     availableDays: ['weekend'], // Default: weekend
     availableTimes: ['afternoon'], // Default: afternoon
     timezone: 'IST', // Default: IST
@@ -39,18 +38,49 @@ const ProfessionalRegistration = () => {
     }
   }, []);
 
-  const sectors = [
-    'Select sector',
-    'Technology',
+  const expertiseDomains = [
+    'Technology & IT',
     'Consulting',
-    'Manufacturing',
+    'FMCG (Fast-Moving Consumer Goods)',
+    'Manufacturing & Operations',
     'Finance & Banking',
     'Healthcare & Pharma',
     'Retail & E-commerce',
+    'Supply Chain & Logistics',
+    'Marketing & Advertising',
+    'Human Resources',
+    'Sales & Business Development',
+    'Product Management',
+    'Strategy & Planning',
     'Energy & Sustainability',
     'Real Estate',
-    'Legal',
-    'Marketing & Advertising',
+    'Legal & Compliance',
+    'Data & Analytics',
+    'Customer Success',
+    'Quality Assurance',
+    'Other'
+  ];
+
+  const languageOptions = [
+    'English',
+    'Spanish',
+    'French',
+    'German',
+    'Mandarin Chinese',
+    'Hindi',
+    'Arabic',
+    'Portuguese',
+    'Japanese',
+    'Korean',
+    'Italian',
+    'Russian',
+    'Dutch',
+    'Tamil',
+    'Telugu',
+    'Bengali',
+    'Marathi',
+    'Gujarati',
+    'Kannada',
     'Other'
   ];
 
@@ -87,9 +117,9 @@ const ProfessionalRegistration = () => {
 
     if (!formData.company.trim()) newErrors.company = 'Company is required';
     if (!formData.role.trim()) newErrors.role = 'Role/Title is required';
-    
-    if (!formData.sector || formData.sector === 'Select sector') {
-      newErrors.sector = 'Please select a sector';
+
+    if (!formData.expertiseDomains || formData.expertiseDomains.length === 0) {
+      newErrors.expertiseDomains = 'Please select at least one expertise domain';
     }
 
     if (!formData.experience) {
@@ -107,11 +137,9 @@ const ProfessionalRegistration = () => {
       newErrors.bio = 'Bio must be at least 50 characters';
     }
 
-    if (formData.bookingLink.trim() && !validateURL(formData.bookingLink)) {
-      newErrors.bookingLink = 'Please enter a valid URL';
+    if (!formData.languages || formData.languages.length === 0) {
+      newErrors.languages = 'Please select at least one language';
     }
-
-    if (!formData.languages.trim()) newErrors.languages = 'At least one language is required';
 
     if (!formData.availableDays || formData.availableDays.length === 0) newErrors.availableDays = 'At least one day preference is required';
     if (!formData.availableTimes || formData.availableTimes.length === 0) newErrors.availableTimes = 'At least one time preference is required';
@@ -168,11 +196,12 @@ const ProfessionalRegistration = () => {
           linkedin_url: formData.linkedin,
           company: formData.company,
           role: formData.role,
-          sector: formData.sector,
+          sector: formData.expertiseDomains.join(', '), // Store as comma-separated for now
+          expertise_domains: formData.expertiseDomains,
           years_experience: parseInt(formData.experience) || 0,
           bio: formData.bio,
-          booking_link: formData.bookingLink || null,
-          languages: formData.languages,
+          languages: formData.languages.join(', '), // Store as comma-separated string
+          languages_array: formData.languages,
           availability: {
             days: formData.availableDays,
             times: formData.availableTimes,
@@ -212,19 +241,20 @@ const ProfessionalRegistration = () => {
           lastName: formData.lastName,
           company: formData.company,
           role: formData.role,
-          sector: formData.sector
+          expertiseDomains: formData.expertiseDomains
         }));
 
-        // Send welcome email
+        // Send verification email
         try {
-          await sendProfessionalWelcomeEmail({
-            professionalEmail: formData.email,
-            professionalName: `${formData.firstName} ${formData.lastName}`,
-            company: formData.company
-          });
-          console.log('✅ Welcome email sent to professional');
+          const { sendVerificationEmail } = await import('./utils/emailVerification');
+          await sendVerificationEmail(
+            formData.email,
+            `${formData.firstName} ${formData.lastName}`,
+            'professional'
+          );
+          console.log('✅ Verification email sent to professional');
         } catch (emailError) {
-          console.error('⚠️ Failed to send welcome email:', emailError);
+          console.error('⚠️ Failed to send verification email:', emailError);
           // Don't block registration if email fails
         }
 
@@ -247,12 +277,18 @@ const ProfessionalRegistration = () => {
     if (errors[field]) {
       setErrors({ ...errors, [field]: '' });
     }
-    // Clear availability errors if at least one is selected
+    // Clear multi-select errors if at least one is selected
     if (field === 'availableTimes' && Array.isArray(value) && value.length > 0 && errors.availableTimes) {
       setErrors({ ...errors, availableTimes: '' });
     }
     if (field === 'availableDays' && Array.isArray(value) && value.length > 0 && errors.availableDays) {
       setErrors({ ...errors, availableDays: '' });
+    }
+    if (field === 'expertiseDomains' && Array.isArray(value) && value.length > 0 && errors.expertiseDomains) {
+      setErrors({ ...errors, expertiseDomains: '' });
+    }
+    if (field === 'languages' && Array.isArray(value) && value.length > 0 && errors.languages) {
+      setErrors({ ...errors, languages: '' });
     }
   };
 
@@ -310,11 +346,11 @@ const ProfessionalRegistration = () => {
             </div>
 
             <h1 className="text-4xl font-bold mb-4">
-              Welcome Aboard! ☕
+              Check Your Email! 📧
             </h1>
-            
+
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-              Your profile is under review (we check LinkedIn to keep quality high). Once verified, students researching your field will start reaching out. <span className="text-blue-400 font-semibold">Grab a coffee and wait for the magic.</span>
+              We've sent a verification link to <span className="text-blue-400 font-semibold">{formData.email}</span>. Click it to verify your email, then we'll review your LinkedIn profile.
             </p>
 
             <div className="bg-white/10 rounded-2xl p-6 mb-8 text-left">
@@ -322,19 +358,19 @@ const ProfessionalRegistration = () => {
               <div className="space-y-3 text-sm text-gray-300">
                 <div className="flex gap-3">
                   <span className="text-blue-400 font-bold">1.</span>
-                  <span>We'll verify your LinkedIn profile (usually within 24 hours)</span>
+                  <span>Verify your email address (check your inbox)</span>
                 </div>
                 <div className="flex gap-3">
                   <span className="text-blue-400 font-bold">2.</span>
-                  <span>You'll get an email when your profile goes live</span>
+                  <span>We'll verify your LinkedIn profile (usually within 24 hours)</span>
                 </div>
                 <div className="flex gap-3">
                   <span className="text-blue-400 font-bold">3.</span>
-                  <span>Students will send interview requests via email</span>
+                  <span>You'll get an email when your profile goes live</span>
                 </div>
                 <div className="flex gap-3">
                   <span className="text-blue-400 font-bold">4.</span>
-                  <span>Accept requests that interest you, share your calendar, and help shape future leaders</span>
+                  <span>Students will send interview requests and you can accept those that interest you</span>
                 </div>
               </div>
             </div>
@@ -369,7 +405,7 @@ const ProfessionalRegistration = () => {
       <nav className="fixed top-0 w-full bg-black/50 backdrop-blur-xl border-b border-white/10 z-50">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg"></div>
+            <img src="/logo.png" alt="NexThesis" className="w-8 h-8" />
             <span className="text-xl font-bold">NexThesis</span>
           </a>
           <div className="flex gap-4 items-center">
@@ -490,40 +526,54 @@ const ProfessionalRegistration = () => {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-300">Sector *</label>
-                  <select
-                    value={formData.sector}
-                    onChange={(e) => handleChange('sector', e.target.value)}
-                    className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white focus:outline-none transition-all ${
-                      errors.sector ? 'border-red-500' : 'border-white/20 focus:border-blue-500'
-                    }`}
-                  >
-                    {sectors.map(sector => (
-                      <option key={sector} value={sector} className="bg-gray-900">
-                        {sector}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.sector && <p className="text-red-400 text-xs mt-1">{errors.sector}</p>}
+              <div>
+                <label className="block text-sm font-medium mb-3 text-gray-300">Expertise Domains * (Select all that apply)</label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-80 overflow-y-auto p-4 bg-white/5 rounded-xl border border-white/10">
+                  {expertiseDomains.map(domain => {
+                    const isSelected = formData.expertiseDomains.includes(domain);
+                    return (
+                      <button
+                        key={domain}
+                        type="button"
+                        onClick={() => {
+                          const newDomains = isSelected
+                            ? formData.expertiseDomains.filter(d => d !== domain)
+                            : [...formData.expertiseDomains, domain];
+                          handleChange('expertiseDomains', newDomains);
+                        }}
+                        className={`px-3 py-2 rounded-lg border-2 transition-all text-xs font-medium text-left ${
+                          isSelected
+                            ? 'border-blue-500 bg-blue-500/20 text-white'
+                            : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:bg-white/10'
+                        }`}
+                      >
+                        {domain}
+                      </button>
+                    );
+                  })}
                 </div>
+                {errors.expertiseDomains && <p className="text-red-400 text-xs mt-1">{errors.expertiseDomains}</p>}
+                <p className="text-gray-500 text-xs mt-1">
+                  {formData.expertiseDomains.length === 0
+                    ? 'Select domains where you have expertise'
+                    : `${formData.expertiseDomains.length} domain${formData.expertiseDomains.length > 1 ? 's' : ''} selected`}
+                </p>
+              </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-300">Years of Experience *</label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="50"
-                    value={formData.experience}
-                    onChange={(e) => handleChange('experience', e.target.value)}
-                    className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
-                      errors.experience ? 'border-red-500' : 'border-white/20 focus:border-blue-500'
-                    }`}
-                    placeholder="8"
-                  />
-                  {errors.experience && <p className="text-red-400 text-xs mt-1">{errors.experience}</p>}
-                </div>
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-300">Years of Experience *</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="50"
+                  value={formData.experience}
+                  onChange={(e) => handleChange('experience', e.target.value)}
+                  className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
+                    errors.experience ? 'border-red-500' : 'border-white/20 focus:border-blue-500'
+                  }`}
+                  placeholder="8"
+                />
+                {errors.experience && <p className="text-red-400 text-xs mt-1">{errors.experience}</p>}
               </div>
 
               <div>
@@ -544,34 +594,37 @@ const ProfessionalRegistration = () => {
               </div>
 
               <div>
-  <label className="block text-sm font-medium mb-2 text-gray-300">Booking Link (Optional)</label>
-  <input
-    type="url"
-    value={formData.bookingLink}
-    onChange={(e) => handleChange('bookingLink', e.target.value)}
-    className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
-      errors.bookingLink ? 'border-red-500' : 'border-white/20 focus:border-blue-500'
-    }`}
-    placeholder="https://calendar.google.com/..."
-  />
-  {errors.bookingLink && <p className="text-red-400 text-xs mt-1">{errors.bookingLink}</p>}
-  <p className="text-gray-500 text-xs mt-1">
-    Optional: Add later via email or share when accepting requests. Google Calendar, Cal.com, or Calendly work great!
-  </p>
-</div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-300">Languages *</label>
-                <input
-                  type="text"
-                  value={formData.languages}
-                  onChange={(e) => handleChange('languages', e.target.value)}
-                  className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
-                    errors.languages ? 'border-red-500' : 'border-white/20 focus:border-blue-500'
-                  }`}
-                  placeholder="e.g., English, Spanish, French"
-                />
+                <label className="block text-sm font-medium mb-3 text-gray-300">Languages * (Select all that apply)</label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-white/5 rounded-xl border border-white/10">
+                  {languageOptions.map(language => {
+                    const isSelected = formData.languages.includes(language);
+                    return (
+                      <button
+                        key={language}
+                        type="button"
+                        onClick={() => {
+                          const newLanguages = isSelected
+                            ? formData.languages.filter(l => l !== language)
+                            : [...formData.languages, language];
+                          handleChange('languages', newLanguages);
+                        }}
+                        className={`px-3 py-2 rounded-lg border-2 transition-all text-xs font-medium ${
+                          isSelected
+                            ? 'border-green-500 bg-green-500/20 text-white'
+                            : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:bg-white/10'
+                        }`}
+                      >
+                        {language}
+                      </button>
+                    );
+                  })}
+                </div>
                 {errors.languages && <p className="text-red-400 text-xs mt-1">{errors.languages}</p>}
+                <p className="text-gray-500 text-xs mt-1">
+                  {formData.languages.length === 0
+                    ? 'Select languages you can conduct interviews in'
+                    : `${formData.languages.length} language${formData.languages.length > 1 ? 's' : ''} selected`}
+                </p>
               </div>
 
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6 mt-6">
