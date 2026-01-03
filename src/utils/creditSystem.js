@@ -10,22 +10,21 @@ export async function getAvailableCredits(studentEmail) {
   try {
     console.log('Checking credits for:', studentEmail);
 
+    // Read credits directly from students table
     const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/rpc/get_available_credits`,
+      `${SUPABASE_URL}/rest/v1/students?email=eq.${encodeURIComponent(studentEmail)}&select=credits`,
       {
-        method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'apikey': SUPABASE_KEY,
           'Authorization': `Bearer ${SUPABASE_KEY}`
-        },
-        body: JSON.stringify({ student_email_param: studentEmail })
+        }
       }
     );
 
-    const credits = await response.json();
+    const students = await response.json();
+    const credits = students && students.length > 0 ? (students[0].credits || 0) : 0;
     console.log('Available credits:', credits);
-    return credits || 0;
+    return credits;
   } catch (error) {
     console.error('Error getting credits:', error);
     return 0;
@@ -62,22 +61,38 @@ export async function deductCredit(studentEmail) {
   try {
     console.log('Using credit for:', studentEmail);
 
+    // Get current credits
+    const currentCredits = await getAvailableCredits(studentEmail);
+
+    if (currentCredits <= 0) {
+      console.error('No credits available');
+      return false;
+    }
+
+    // Deduct one credit
     const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/rpc/use_interview_credit`,
+      `${SUPABASE_URL}/rest/v1/students?email=eq.${encodeURIComponent(studentEmail)}`,
       {
-        method: 'POST',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Prefer': 'return=representation'
         },
-        body: JSON.stringify({ student_email_param: studentEmail })
+        body: JSON.stringify({
+          credits: currentCredits - 1
+        })
       }
     );
 
-    const result = await response.json();
-    console.log('Credit used successfully:', result);
-    return result === true;
+    if (response.ok) {
+      console.log('Credit deducted successfully');
+      return true;
+    } else {
+      console.error('Failed to deduct credit');
+      return false;
+    }
   } catch (error) {
     console.error('Error using credit:', error);
     return false;
