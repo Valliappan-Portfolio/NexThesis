@@ -520,7 +520,7 @@ const ProfessionalRegistration = () => {
 
               <div>
                 <label className="block text-sm font-medium mb-3 text-gray-300">
-                  Where can you help students? * <span className="text-gray-500 font-normal">(Select all expertise areas that apply)</span>
+                  Select your Areas of Expertise * <span className="text-gray-500 font-normal">(Select all that apply)</span>
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-80 overflow-y-auto p-4 bg-white/5 rounded-xl border border-white/10">
                   {expertiseDomains.map(domain => {

@@ -40,6 +40,111 @@ const PricingPage = () => {
             </p>
           </div>
 
+          {/* Pricing Cards - 3 Column Grid */}
+          <div className="grid md:grid-cols-3 gap-8 mb-16 items-center">
+            {/* CARD 1 - STARTER */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-blue-400/50 transition-all hover:scale-105">
+              <div className="mb-6">
+                <div className="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Starter</div>
+                <div className="flex items-baseline gap-2 mb-1">
+                  <div className="text-5xl font-bold text-white">€29</div>
+                </div>
+                <div className="text-gray-500 text-sm">per interview</div>
+              </div>
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-3 py-2 mb-6">
+                <div className="text-xs text-blue-300 font-semibold mb-1">👤 BEST FOR:</div>
+                <div className="text-xs text-gray-300 leading-relaxed">First-time users • Single expert perspective • Quick validation of research ideas</div>
+              </div>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span>Single 30-minute session</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span>Verified professional</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span>Guaranteed commitment</span>
+                </li>
+              </ul>
+              <a href="/register/student" className="block w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-semibold text-center transition-all">
+                Select
+              </a>
+            </div>
+
+            {/* CARD 2 - RESEARCH PACK (MOST POPULAR) */}
+            <div className="bg-gradient-to-br from-blue-600/10 to-purple-600/10 backdrop-blur-sm border-2 border-blue-500 rounded-2xl p-8 relative transform md:scale-110 hover:scale-115 transition-all shadow-xl shadow-blue-500/20">
+              <div className="absolute -top-3 right-4 px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                <Star className="w-3 h-3" />
+                Most Popular
+              </div>
+              <div className="mb-6">
+                <div className="text-sm font-bold text-blue-300 mb-2 uppercase tracking-wider">Research Pack</div>
+                <div className="flex items-baseline gap-2 mb-1">
+                  <div className="text-5xl font-bold text-white">€79</div>
+                </div>
+                <div className="text-gray-400 text-sm mb-2">for 3 interviews</div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-500/20 border border-green-500/30 rounded-lg">
+                  <span className="text-green-400 text-xs font-bold">Save €8</span>
+                  <span className="text-gray-400 text-xs">•</span>
+                  <span className="text-gray-400 text-xs">€26.33 each</span>
+                </div>
+              </div>
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg px-3 py-2 mb-6">
+                <div className="text-xs text-blue-300 font-semibold mb-1">👥 BEST FOR:</div>
+                <div className="text-xs text-gray-200 leading-relaxed">Bachelor's/Master's thesis • Meeting academic source requirements • Cross-industry insights</div>
+              </div>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-start gap-2 text-sm text-gray-200">
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span>Everything in Starter</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-200">
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span>3 different experts</span>
+                </li>
+              </ul>
+              <a href="/register/student" className="block w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-center transition-all shadow-lg text-lg">
+                Get Started
+              </a>
+            </div>
+
+            {/* CARD 3 - THESIS BUNDLE */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-purple-400/50 transition-all hover:scale-105">
+              <div className="mb-6">
+                <div className="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Thesis Bundle</div>
+                <div className="flex items-baseline gap-2 mb-1">
+                  <div className="text-5xl font-bold text-white">€129</div>
+                </div>
+                <div className="text-gray-500 text-sm mb-2">for 5 interviews</div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-lg">
+                  <span className="text-green-400 text-xs font-semibold">Save €16</span>
+                  <span className="text-gray-500 text-xs">•</span>
+                  <span className="text-gray-500 text-xs">€25.80 each</span>
+                </div>
+              </div>
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg px-3 py-2 mb-6">
+                <div className="text-xs text-purple-300 font-semibold mb-1">👥👥 BEST FOR:</div>
+                <div className="text-xs text-gray-300 leading-relaxed">PhD/MBA research • Comprehensive market analysis • Multiple expert validation</div>
+              </div>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span>Everything included</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span>5 verified experts</span>
+                </li>
+              </ul>
+              <a href="/register/student" className="block w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-semibold text-center transition-all">
+                Select
+              </a>
+            </div>
+          </div>
+
           {/* Risk-Free Guarantee Box */}
           <div className="bg-gradient-to-br from-green-600/10 to-emerald-600/10 border-2 border-green-500/30 rounded-2xl p-8 mb-12">
             <div className="text-center mb-6">
@@ -76,131 +181,6 @@ const PricingPage = () => {
                   <span className="text-white font-semibold">Payments secured by Stripe</span>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Pricing Cards - 3 Column Grid */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16 items-center">
-            {/* CARD 1 - STARTER */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-blue-400/50 transition-all hover:scale-105">
-              <div className="mb-6">
-                <div className="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Starter</div>
-                <div className="flex items-baseline gap-2 mb-1">
-                  <div className="text-5xl font-bold text-white">€29</div>
-                </div>
-                <div className="text-gray-500 text-sm">per interview</div>
-              </div>
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-3 py-2 mb-6">
-                <div className="text-xs text-blue-300 font-semibold mb-1">👤 BEST FOR:</div>
-                <div className="text-xs text-gray-300 leading-relaxed">Testing platform • Adding one expert source • Supplementing research</div>
-              </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start gap-2 text-sm text-gray-300">
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span>Single 30-minute session</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm text-gray-300">
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span>Verified professional</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm text-gray-300">
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span>Recorded & transcribed</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm text-gray-300">
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span>Guaranteed commitment</span>
-                </li>
-              </ul>
-              <a href="/register/student" className="block w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-semibold text-center transition-all">
-                Select
-              </a>
-            </div>
-
-            {/* CARD 2 - RESEARCH PACK (MOST POPULAR) */}
-            <div className="bg-gradient-to-br from-blue-600/10 to-purple-600/10 backdrop-blur-sm border-2 border-blue-500 rounded-2xl p-8 relative transform md:scale-110 hover:scale-115 transition-all shadow-xl shadow-blue-500/20">
-              <div className="absolute -top-3 right-4 px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold rounded-full flex items-center gap-1">
-                <Star className="w-3 h-3" />
-                Most Popular
-              </div>
-              <div className="mb-6">
-                <div className="text-sm font-bold text-blue-300 mb-2 uppercase tracking-wider">Research Pack</div>
-                <div className="flex items-baseline gap-2 mb-1">
-                  <div className="text-5xl font-bold text-white">€79</div>
-                </div>
-                <div className="text-gray-400 text-sm mb-2">for 3 interviews</div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-500/20 border border-green-500/30 rounded-lg">
-                  <span className="text-green-400 text-xs font-bold">Save €8</span>
-                  <span className="text-gray-400 text-xs">•</span>
-                  <span className="text-gray-400 text-xs">€26.33 each</span>
-                </div>
-              </div>
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg px-3 py-2 mb-6">
-                <div className="text-xs text-blue-300 font-semibold mb-1">👥 BEST FOR:</div>
-                <div className="text-xs text-gray-200 leading-relaxed">Meeting thesis requirements (3-5 sources) • Comparing perspectives • Qualitative research</div>
-              </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start gap-2 text-sm text-gray-200">
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span>Everything in Starter</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm text-gray-200">
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span>3 different experts</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm text-gray-200">
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span>Valid for 3 months</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm text-gray-200">
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span>Priority booking</span>
-                </li>
-              </ul>
-              <a href="/register/student" className="block w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-center transition-all shadow-lg text-lg">
-                Get Started
-              </a>
-            </div>
-
-            {/* CARD 3 - THESIS BUNDLE */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-purple-400/50 transition-all hover:scale-105">
-              <div className="mb-6">
-                <div className="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Thesis Bundle</div>
-                <div className="flex items-baseline gap-2 mb-1">
-                  <div className="text-5xl font-bold text-white">€129</div>
-                </div>
-                <div className="text-gray-500 text-sm mb-2">for 5 interviews</div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-lg">
-                  <span className="text-green-400 text-xs font-semibold">Save €16</span>
-                  <span className="text-gray-500 text-xs">•</span>
-                  <span className="text-gray-500 text-xs">€25.80 each</span>
-                </div>
-              </div>
-              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg px-3 py-2 mb-6">
-                <div className="text-xs text-purple-300 font-semibold mb-1">👥👥 BEST FOR:</div>
-                <div className="text-xs text-gray-300 leading-relaxed">MBA/Master's thesis • Multi-sector analysis • In-depth studies</div>
-              </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start gap-2 text-sm text-gray-300">
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span>Everything included</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm text-gray-300">
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span>5 verified experts</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm text-gray-300">
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span>Priority booking</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm text-gray-300">
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span>Valid for 6 months</span>
-                </li>
-              </ul>
-              <a href="/register/student" className="block w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-semibold text-center transition-all">
-                Select
-              </a>
             </div>
           </div>
 
@@ -272,8 +252,8 @@ const PricingPage = () => {
                 <div className="text-sm text-gray-400">Yes, all interviews are recordable and transcribed. Perfect for thesis methodology and analysis.</div>
               </div>
               <div>
-                <div className="font-semibold text-white mb-2">How long are my credits valid?</div>
-                <div className="text-sm text-gray-400">Starter: immediate use. Research Pack: 3 months. Thesis Bundle: 6 months. Use them at your own pace.</div>
+                <div className="font-semibold text-white mb-2">Do my credits expire?</div>
+                <div className="text-sm text-gray-400">No! Your credits never expire. Use them at your own pace throughout your research journey.</div>
               </div>
             </div>
           </div>
