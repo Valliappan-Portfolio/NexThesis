@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Coffee, Home } from 'lucide-react';
+import { ArrowRight, Coffee, Home, Eye, X, CheckCircle } from 'lucide-react';
 import { sendProfessionalWelcomeEmail } from './utils/resend';
 
 const ProfessionalRegistration = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -750,18 +751,116 @@ const ProfessionalRegistration = () => {
                 </div>
               )}
 
-              <button
-                onClick={handleSubmit}
-                className="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-lg transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
-              >
-                Submit for Verification
-                <ArrowRight className="w-5 h-5" />
-              </button>
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => setShowPreview(true)}
+                  className="flex-1 py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <Eye className="w-5 h-5" />
+                  Preview Profile
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  className="flex-1 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-lg transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
+                >
+                  Submit for Verification
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    {/* Profile Preview Modal */}
+    {showPreview && (
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6" onClick={() => setShowPreview(false)}>
+        <div className="bg-gradient-to-br from-gray-900 to-black border border-white/20 rounded-3xl max-w-2xl w-full p-8 relative" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => setShowPreview(false)}
+            className="absolute top-6 right-6 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold mb-2">Preview: How Students See You</h2>
+            <p className="text-gray-400 text-sm">This is how your profile will appear to students browsing for experts</p>
+          </div>
+
+          {/* Preview Card */}
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                {(formData.firstName?.[0] || '?')}{(formData.lastName?.[0] || '?')}
+              </div>
+              <div className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium flex items-center gap-1 border border-green-500/30">
+                <CheckCircle className="w-3 h-3" />
+                Verified
+              </div>
+            </div>
+
+            <h3 className="font-bold text-lg mb-1">
+              {formData.firstName || 'Your First Name'} {formData.lastName || 'Your Last Name'}
+            </h3>
+            <p className="text-gray-400 text-sm mb-1">{formData.role || 'Your Role/Title'}</p>
+            <p className="text-blue-400 font-semibold text-sm mb-3">{formData.company || 'Your Company'}</p>
+
+            {formData.expertiseDomains.length > 0 && (
+              <div className="mb-3">
+                <div className="flex flex-wrap gap-2">
+                  {formData.expertiseDomains.slice(0, 3).map(domain => (
+                    <span key={domain} className="px-2 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded text-xs font-medium">
+                      {domain}
+                    </span>
+                  ))}
+                  {formData.expertiseDomains.length > 3 && (
+                    <span className="px-2 py-1 bg-white/10 border border-white/20 text-gray-400 rounded text-xs font-medium">
+                      +{formData.expertiseDomains.length - 3} more
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <p className="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3">
+              {formData.bio || 'Your bio will appear here. Share your expertise and why students should interview you.'}
+            </p>
+
+            <div className="flex items-center justify-between pt-4 border-t border-white/10">
+              <div className="flex gap-3">
+                <span className="px-3 py-1 bg-white/5 border border-white/10 text-gray-300 rounded-lg text-xs font-medium">
+                  {formData.experience || '0'}Y Exp
+                </span>
+                {formData.languages.length > 0 && (
+                  <span className="px-3 py-1 bg-white/5 border border-white/10 text-gray-300 rounded-lg text-xs font-medium">
+                    {formData.languages.slice(0, 2).join(', ')}
+                    {formData.languages.length > 2 && ` +${formData.languages.length - 2}`}
+                  </span>
+                )}
+              </div>
+              <span className="text-blue-400 font-semibold text-sm">View Profile</span>
+            </div>
+          </div>
+
+          <div className="mt-6 bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
+            <p className="text-sm text-gray-300">
+              💡 <strong>Tip:</strong> Make sure your bio is compelling and clearly explains what you bring to the table. Students are more likely to request interviews with detailed, specific profiles.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowPreview(false)}
+            className="w-full mt-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold transition-all"
+          >
+            Close Preview
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
   );
 };
 
