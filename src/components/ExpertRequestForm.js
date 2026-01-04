@@ -7,8 +7,7 @@ import { ExternalLink } from 'lucide-react';
  * Redirects to Google Form for submissions
  */
 function ExpertRequestForm() {
-  // TODO: Replace this URL with your actual Google Form link
-  const GOOGLE_FORM_URL = 'https://forms.gle/YOUR_FORM_ID_HERE';
+  const GOOGLE_FORM_URL = 'https://forms.gle/XHMVPCzegvzi81VV9';
 
   const handleOpenForm = () => {
     window.open(GOOGLE_FORM_URL, '_blank');
