@@ -89,7 +89,7 @@ Thank you!
     `.trim();
 
     // Open mailto link
-    const mailtoLink = `mailto:support@nexthesis.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailtoLink = `mailto:vspvalliappan@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoLink;
 
     // Show success message
@@ -259,7 +259,7 @@ Thank you!
         </div>
 
         <p className="text-xs text-gray-500 text-center">
-          This will open your email client with a pre-filled message to support@nexthesis.com
+          This will open your email client with a pre-filled message to our team
         </p>
       </form>
     </div>

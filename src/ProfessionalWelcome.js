@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, User, CheckCircle, Clock, XCircle, LogOut, Coffee, Home } from 'lucide-react';
+import { ArrowRight, User, CheckCircle, Clock, XCircle, LogOut, Coffee, Home, Mail } from 'lucide-react';
 
 const ProfessionalWelcome = () => {
   const [userData, setUserData] = useState(null);
@@ -126,6 +126,31 @@ const ProfessionalWelcome = () => {
             </p>
           </div>
 
+          {/* Verification Status Banner */}
+          <div className="bg-gradient-to-r from-yellow-600/20 to-orange-600/20 border-2 border-yellow-500/40 rounded-2xl p-6 mb-8">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <Mail className="w-6 h-6 text-yellow-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-yellow-300 mb-2">Profile Verification Status</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                    <span className="text-gray-300">⏳ <strong>Email Verification:</strong> Please check your inbox and verify your email address</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                    <span className="text-gray-300">⏳ <strong>LinkedIn Verification:</strong> Our team is reviewing your LinkedIn profile (usually within 24 hours)</span>
+                  </div>
+                </div>
+                <p className="text-sm text-yellow-400 mt-4">
+                  <strong>Note:</strong> Your profile will be visible to students once both verifications are complete. You'll receive an email notification when you're approved!
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Request Status Cards */}
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all">
@@ -238,14 +263,6 @@ const ProfessionalWelcome = () => {
             </div>
           </div>
 
-          {/* Helpful Tips */}
-          <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
-            <h4 className="font-semibold mb-2 text-blue-300">💡 Pro Tip</h4>
-            <p className="text-gray-300 text-sm leading-relaxed">
-              Students appreciate quick responses! Most successful interviews happen when professionals respond within 48 hours. 
-              If you're available, share your calendar link when accepting requests to make scheduling seamless.
-            </p>
-          </div>
         </div>
       </div>
     </div>
