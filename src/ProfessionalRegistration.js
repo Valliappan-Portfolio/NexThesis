@@ -4,7 +4,6 @@ import { ArrowRight, Coffee, Home, Eye, X, CheckCircle, ChevronDown } from 'luci
 const ProfessionalRegistration = () => {
   const [submitted, setSubmitted] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -15,7 +14,6 @@ const ProfessionalRegistration = () => {
     expertiseDomains: [],
     experience: '',
     bio: '',
-    languages: [],
     availableDays: ['weekend'], // Default: weekend
     availableTimes: ['afternoon'], // Default: afternoon
     timezone: 'IST', // Default: IST
@@ -62,29 +60,6 @@ const ProfessionalRegistration = () => {
     'Other'
   ];
 
-  const languageOptions = [
-    'English',
-    'Spanish',
-    'French',
-    'German',
-    'Mandarin Chinese',
-    'Hindi',
-    'Arabic',
-    'Portuguese',
-    'Japanese',
-    'Korean',
-    'Italian',
-    'Russian',
-    'Dutch',
-    'Tamil',
-    'Telugu',
-    'Bengali',
-    'Marathi',
-    'Gujarati',
-    'Kannada',
-    'Other'
-  ];
-
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
@@ -127,10 +102,6 @@ const ProfessionalRegistration = () => {
       newErrors.bio = 'Bio is required';
     } else if (formData.bio.trim().length < 50) {
       newErrors.bio = 'Bio must be at least 50 characters';
-    }
-
-    if (!formData.languages || formData.languages.length === 0) {
-      newErrors.languages = 'Please select at least one language';
     }
 
     if (!formData.availableDays || formData.availableDays.length === 0) newErrors.availableDays = 'At least one day preference is required';
@@ -192,8 +163,8 @@ const ProfessionalRegistration = () => {
           expertise_domains: formData.expertiseDomains,
           years_experience: parseInt(formData.experience) || 0,
           bio: formData.bio,
-          languages: formData.languages.join(', '), // Store as comma-separated string
-          languages_array: formData.languages,
+          languages: 'English',
+          languages_array: ['English'],
           availability: {
             days: formData.availableDays,
             times: formData.availableTimes,
@@ -278,9 +249,6 @@ const ProfessionalRegistration = () => {
     }
     if (field === 'expertiseDomains' && Array.isArray(value) && value.length > 0 && errors.expertiseDomains) {
       setErrors({ ...errors, expertiseDomains: '' });
-    }
-    if (field === 'languages' && Array.isArray(value) && value.length > 0 && errors.languages) {
-      setErrors({ ...errors, languages: '' });
     }
   };
 
@@ -367,12 +335,6 @@ const ProfessionalRegistration = () => {
               </div>
             </div>
 
-            <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-8">
-              <p className="text-sm text-gray-300">
-                💡 <strong>Pro tip:</strong> Students love experts who respond quickly. Most book interviews within 48 hours of acceptance.
-              </p>
-            </div>
-
             <a
               href="/"
               className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-semibold transition-all"
@@ -439,7 +401,7 @@ const ProfessionalRegistration = () => {
                     className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
                       errors.firstName ? 'border-red-500' : 'border-white/20 focus:border-blue-500'
                     }`}
-                    placeholder="Valliappan"
+                    placeholder="John"
                   />
                   {errors.firstName && <p className="text-red-400 text-xs mt-1">{errors.firstName}</p>}
                 </div>
@@ -453,7 +415,7 @@ const ProfessionalRegistration = () => {
                     className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
                       errors.lastName ? 'border-red-500' : 'border-white/20 focus:border-blue-500'
                     }`}
-                    placeholder="Natarajan"
+                    placeholder="Doe"
                   />
                   {errors.lastName && <p className="text-red-400 text-xs mt-1">{errors.lastName}</p>}
                 </div>
@@ -468,7 +430,7 @@ const ProfessionalRegistration = () => {
                   className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
                     errors.email ? 'border-red-500' : 'border-white/20 focus:border-blue-500'
                   }`}
-                  placeholder="v.natarajan@company.com"
+                  placeholder="john.doe@company.com"
                 />
                 {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
                 <p className="text-gray-500 text-xs mt-1">Your email won't be visible to students</p>
@@ -483,7 +445,7 @@ const ProfessionalRegistration = () => {
                   className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
                     errors.linkedin ? 'border-red-500' : 'border-white/20 focus:border-blue-500'
                   }`}
-                  placeholder="https://linkedin.com/in/yourprofile"
+                  placeholder="https://linkedin.com/in/johndoe"
                 />
                 {errors.linkedin && <p className="text-red-400 text-xs mt-1">{errors.linkedin}</p>}
               </div>
@@ -498,7 +460,7 @@ const ProfessionalRegistration = () => {
                     className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
                       errors.company ? 'border-red-500' : 'border-white/20 focus:border-blue-500'
                     }`}
-                    placeholder="e.g., Nestlé"
+                    placeholder="e.g., Google"
                   />
                   {errors.company && <p className="text-red-400 text-xs mt-1">{errors.company}</p>}
                 </div>
@@ -512,7 +474,7 @@ const ProfessionalRegistration = () => {
                     className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
                       errors.role ? 'border-red-500' : 'border-white/20 focus:border-blue-500'
                     }`}
-                    placeholder="e.g., Operations Specialist"
+                    placeholder="e.g., Senior Product Manager"
                   />
                   {errors.role && <p className="text-red-400 text-xs mt-1">{errors.role}</p>}
                 </div>
@@ -585,74 +547,6 @@ const ProfessionalRegistration = () => {
                 <p className="text-gray-500 text-xs mt-1">
                   Minimum 50 characters · {formData.bio.length}/50
                 </p>
-              </div>
-
-              <div className="relative">
-                <label className="block text-sm font-medium mb-2 text-gray-300">Languages * (Select all that apply)</label>
-                <button
-                  type="button"
-                  onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
-                  className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-left transition-all flex items-center justify-between ${
-                    errors.languages ? 'border-red-500' : 'border-white/20 hover:border-blue-500'
-                  }`}
-                >
-                  <span className={formData.languages.length === 0 ? 'text-gray-500' : 'text-white'}>
-                    {formData.languages.length === 0
-                      ? 'Select languages...'
-                      : `${formData.languages.length} language${formData.languages.length > 1 ? 's' : ''} selected`}
-                  </span>
-                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${showLanguageDropdown ? 'rotate-180' : ''}`} />
-                </button>
-
-                {showLanguageDropdown && (
-                  <div className="absolute z-10 w-full mt-2 bg-gray-900 border border-white/20 rounded-xl shadow-2xl max-h-64 overflow-y-auto">
-                    {languageOptions.map(language => {
-                      const isSelected = formData.languages.includes(language);
-                      return (
-                        <button
-                          key={language}
-                          type="button"
-                          onClick={() => {
-                            const newLanguages = isSelected
-                              ? formData.languages.filter(l => l !== language)
-                              : [...formData.languages, language];
-                            handleChange('languages', newLanguages);
-                          }}
-                          className="w-full px-4 py-3 hover:bg-white/10 transition-all flex items-center gap-3 text-left border-b border-white/5 last:border-b-0"
-                        >
-                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                            isSelected ? 'border-green-500 bg-green-500' : 'border-gray-500'
-                          }`}>
-                            {isSelected && (
-                              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                              </svg>
-                            )}
-                          </div>
-                          <span className={isSelected ? 'text-white font-medium' : 'text-gray-400'}>{language}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {errors.languages && <p className="text-red-400 text-xs mt-1">{errors.languages}</p>}
-                {formData.languages.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {formData.languages.map(lang => (
-                      <span key={lang} className="px-2 py-1 bg-green-500/20 border border-green-500/30 text-green-400 rounded text-xs font-medium flex items-center gap-1">
-                        {lang}
-                        <button
-                          type="button"
-                          onClick={() => handleChange('languages', formData.languages.filter(l => l !== lang))}
-                          className="hover:text-green-300"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
               </div>
 
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6 mt-6">
@@ -860,12 +754,6 @@ const ProfessionalRegistration = () => {
                 <span className="px-3 py-1 bg-white/5 border border-white/10 text-gray-300 rounded-lg text-xs font-medium">
                   {formData.experience || '0'}Y Exp
                 </span>
-                {formData.languages.length > 0 && (
-                  <span className="px-3 py-1 bg-white/5 border border-white/10 text-gray-300 rounded-lg text-xs font-medium">
-                    {formData.languages.slice(0, 2).join(', ')}
-                    {formData.languages.length > 2 && ` +${formData.languages.length - 2}`}
-                  </span>
-                )}
               </div>
               <span className="text-blue-400 font-semibold text-sm">View Profile</span>
             </div>
