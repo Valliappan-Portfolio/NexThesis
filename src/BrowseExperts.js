@@ -136,19 +136,8 @@ const BrowseExpertsPage = () => {
             </p>
           </div>
 
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 mb-8">
-            <div className="flex flex-wrap items-center gap-4">
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg transition-all"
-              >
-                <Filter className="w-4 h-4" />
-                <span className="font-medium">Filters</span>
-                {activeFilterCount > 0 && (
-                  <span className="px-2 py-0.5 bg-blue-600 text-xs rounded-full">{activeFilterCount}</span>
-                )}
-              </button>
-
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-wrap items-center gap-3">
               {Object.entries(filters).map(([key, value]) => (
                 value !== 'All' && (
                   <div key={key} className="flex items-center gap-2 px-3 py-1.5 bg-blue-600/20 border border-blue-500/30 rounded-lg text-sm">
@@ -173,8 +162,21 @@ const BrowseExpertsPage = () => {
               )}
             </div>
 
-            {showFilters && (
-              <div className="grid md:grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/10">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 border border-blue-500/50 rounded-lg transition-all font-medium shadow-lg shadow-blue-500/30"
+            >
+              <Filter className="w-4 h-4" />
+              <span>{showFilters ? 'Hide Filters' : 'Show Filters'}</span>
+              {activeFilterCount > 0 && (
+                <span className="px-2 py-0.5 bg-white/20 text-xs rounded-full font-bold">{activeFilterCount}</span>
+              )}
+            </button>
+          </div>
+
+          {showFilters && (
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 mb-8">
+              <div className="grid md:grid-cols-3 gap-4">
                 <div>
                   <button
                     onClick={() => setExpandedFilter(expandedFilter === 'sector' ? null : 'sector')}
@@ -289,8 +291,8 @@ const BrowseExpertsPage = () => {
                   )}
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {loading ? (
             <div className="text-center py-20">
