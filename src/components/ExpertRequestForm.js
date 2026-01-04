@@ -4,11 +4,12 @@ import { X, Send, CheckCircle } from 'lucide-react';
 /**
  * Expert Request Form Component
  * Allows students to submit custom expert requirements when they can't find the right match
- * Uses mailto: to send request directly to support@nexthesis.com
+ * Uses Supabase Edge Function to send email to vspvalliappan@gmail.com
  */
 function ExpertRequestForm() {
   const [showForm, setShowForm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [userData, setUserData] = useState({ name: '', email: '' });
   const [formData, setFormData] = useState({
     thesisTopic: '',
@@ -54,59 +55,62 @@ function ExpertRequestForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
-    // Create email content
-    const subject = `Custom Expert Request - ${formData.thesisTopic}`;
-    const body = `
-Hello NexThesis Team,
+    setSubmitting(true);
 
-I'm looking for an expert that matches the following requirements:
+    try {
+      // Call Supabase Edge Function
+      const response = await fetch(
+        'https://bpupukmduvbzyywbcngj.supabase.co/functions/v1/send-expert-request',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw'
+          },
+          body: JSON.stringify({
+            studentName: userData.name,
+            studentEmail: userData.email,
+            thesisTopic: formData.thesisTopic,
+            helpNeeded: formData.helpNeeded,
+            expectedOutcome: formData.expectedOutcome,
+            expertise: formData.expertise,
+            additionalNotes: formData.additionalNotes
+          })
+        }
+      );
 
-Student Name: ${userData.name || 'Not provided'}
-Student Email: ${userData.email || 'Not provided'}
+      const data = await response.json();
 
-THESIS TOPIC:
-${formData.thesisTopic}
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit request');
+      }
 
-HELP NEEDED:
-${formData.helpNeeded}
+      // Show success message
+      setSubmitted(true);
 
-EXPECTED OUTCOME:
-${formData.expectedOutcome}
-
-REQUIRED EXPERTISE:
-${formData.expertise}
-
-${formData.additionalNotes ? `ADDITIONAL NOTES:\n${formData.additionalNotes}` : ''}
-
-Please let me know when you find a suitable expert.
-
-Thank you!
-    `.trim();
-
-    // Open mailto link
-    const mailtoLink = `mailto:vspvalliappan@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoLink;
-
-    // Show success message
-    setSubmitted(true);
-
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setShowForm(false);
-      setSubmitted(false);
-      setFormData({
-        thesisTopic: '',
-        helpNeeded: '',
-        expectedOutcome: '',
-        expertise: '',
-        additionalNotes: ''
-      });
-    }, 3000);
+      // Reset form after 5 seconds
+      setTimeout(() => {
+        setShowForm(false);
+        setSubmitted(false);
+        setFormData({
+          thesisTopic: '',
+          helpNeeded: '',
+          expectedOutcome: '',
+          expertise: '',
+          additionalNotes: ''
+        });
+      }, 5000);
+    } catch (error) {
+      console.error('Error submitting expert request:', error);
+      alert('Failed to submit request. Please try again or email us directly at vspvalliappan@gmail.com');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (!showForm) {
@@ -138,9 +142,9 @@ Thank you!
               <CheckCircle className="w-10 h-10 text-green-400" />
             </div>
           </div>
-          <h3 className="text-3xl font-bold mb-4 text-green-400">Email Client Opened!</h3>
+          <h3 className="text-3xl font-bold mb-4 text-green-400">Request Sent Successfully!</h3>
           <p className="text-gray-300 text-lg mb-2">
-            Your email client should have opened with a pre-filled message. Please send it to complete your request.
+            Your custom expert request has been sent to our team.
           </p>
           <p className="text-gray-400 text-sm">
             We'll get back to you within one week with suitable expert recommendations.
@@ -244,22 +248,24 @@ Thank you!
         <div className="flex gap-4">
           <button
             type="submit"
-            className="flex-1 py-4 bg-purple-600 hover:bg-purple-500 rounded-xl font-bold text-lg transition-all shadow-lg shadow-purple-500/30 flex items-center justify-center gap-2"
+            disabled={submitting}
+            className="flex-1 py-4 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-600/50 disabled:cursor-not-allowed rounded-xl font-bold text-lg transition-all shadow-lg shadow-purple-500/30 flex items-center justify-center gap-2"
           >
-            Send Request via Email
-            <Send className="w-5 h-5" />
+            {submitting ? 'Sending...' : 'Send Request'}
+            {!submitting && <Send className="w-5 h-5" />}
           </button>
           <button
             type="button"
             onClick={() => setShowForm(false)}
-            className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-semibold transition-all"
+            disabled={submitting}
+            className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
         </div>
 
         <p className="text-xs text-gray-500 text-center">
-          This will open your email client with a pre-filled message to our team
+          Your request will be sent directly to our team
         </p>
       </form>
     </div>
