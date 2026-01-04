@@ -255,6 +255,31 @@ const ProfessionalDashboard = () => {
 
       <div className="pt-32 pb-20 px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
+          {/* Verification Status Banner */}
+          <div className="bg-gradient-to-r from-yellow-600/20 to-orange-600/20 border-2 border-yellow-500/40 rounded-2xl p-6 mb-8">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <Mail className="w-6 h-6 text-yellow-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-yellow-300 mb-2">Profile Verification Status</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                    <span className="text-gray-300">⏳ <strong>Email Verification:</strong> Please check your inbox and verify your email address</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                    <span className="text-gray-300">⏳ <strong>LinkedIn Verification:</strong> Our team is reviewing your LinkedIn profile (usually within 24 hours)</span>
+                  </div>
+                </div>
+                <p className="text-sm text-yellow-400 mt-4">
+                  <strong>Note:</strong> Your profile will be visible to students once both verifications are complete. You'll receive an email notification when you're approved!
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2">Interview Requests Dashboard</h1>
             <p className="text-gray-400">Review and respond to student interview requests</p>

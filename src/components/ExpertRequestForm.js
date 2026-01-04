@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Send, CheckCircle } from 'lucide-react';
 
 /**
  * Expert Request Form Component
  * Allows students to submit custom expert requirements when they can't find the right match
+ * Uses mailto: to send request directly to support@nexthesis.com
  */
 function ExpertRequestForm() {
   const [showForm, setShowForm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [userData, setUserData] = useState({ name: '', email: '' });
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
     thesisTopic: '',
     helpNeeded: '',
     expectedOutcome: '',
@@ -18,6 +18,22 @@ function ExpertRequestForm() {
     additionalNotes: ''
   });
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    // Get user data from localStorage if logged in
+    const stored = localStorage.getItem('nexthesis_user');
+    if (stored) {
+      try {
+        const user = JSON.parse(stored);
+        setUserData({
+          name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.name || '',
+          email: user.email || ''
+        });
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+      }
+    }
+  }, []);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -29,12 +45,6 @@ function ExpertRequestForm() {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
     if (!formData.thesisTopic.trim()) newErrors.thesisTopic = 'Thesis topic is required';
     if (!formData.helpNeeded.trim()) newErrors.helpNeeded = 'Please describe what help you need';
     if (!formData.expectedOutcome.trim()) newErrors.expectedOutcome = 'Expected outcome is required';
@@ -44,70 +54,59 @@ function ExpertRequestForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
-    try {
-      // Send email notification to admin
-      await fetch('https://bpupukmduvbzyywbcngj.supabase.co/functions/v1/send-expert-request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw'
-        },
-        body: JSON.stringify({
-          to: 'vspvalliappan@gmail.com',
-          subject: `New Expert Request from ${formData.name}`,
-          studentName: formData.name,
-          studentEmail: formData.email,
-          thesisTopic: formData.thesisTopic,
-          helpNeeded: formData.helpNeeded,
-          expectedOutcome: formData.expectedOutcome,
-          expertise: formData.expertise,
-          additionalNotes: formData.additionalNotes,
-          submittedAt: new Date().toISOString()
-        })
+    // Create email content
+    const subject = `Custom Expert Request - ${formData.thesisTopic}`;
+    const body = `
+Hello NexThesis Team,
+
+I'm looking for an expert that matches the following requirements:
+
+Student Name: ${userData.name || 'Not provided'}
+Student Email: ${userData.email || 'Not provided'}
+
+THESIS TOPIC:
+${formData.thesisTopic}
+
+HELP NEEDED:
+${formData.helpNeeded}
+
+EXPECTED OUTCOME:
+${formData.expectedOutcome}
+
+REQUIRED EXPERTISE:
+${formData.expertise}
+
+${formData.additionalNotes ? `ADDITIONAL NOTES:\n${formData.additionalNotes}` : ''}
+
+Please let me know when you find a suitable expert.
+
+Thank you!
+    `.trim();
+
+    // Open mailto link
+    const mailtoLink = `mailto:support@nexthesis.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoLink;
+
+    // Show success message
+    setSubmitted(true);
+
+    // Reset form after 3 seconds
+    setTimeout(() => {
+      setShowForm(false);
+      setSubmitted(false);
+      setFormData({
+        thesisTopic: '',
+        helpNeeded: '',
+        expectedOutcome: '',
+        expertise: '',
+        additionalNotes: ''
       });
-
-      // Also send confirmation email to student
-      await fetch('https://bpupukmduvbzyywbcngj.supabase.co/functions/v1/send-expert-request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw'
-        },
-        body: JSON.stringify({
-          to: formData.email,
-          subject: 'Expert Request Received - NexThesis',
-          isConfirmation: true,
-          studentName: formData.name,
-          thesisTopic: formData.thesisTopic
-        })
-      });
-
-      setSubmitted(true);
-
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        setShowForm(false);
-        setSubmitted(false);
-        setFormData({
-          name: '',
-          email: '',
-          thesisTopic: '',
-          helpNeeded: '',
-          expectedOutcome: '',
-          expertise: '',
-          additionalNotes: ''
-        });
-      }, 3000);
-
-    } catch (error) {
-      console.error('Error submitting expert request:', error);
-      alert('Failed to submit request. Please try again or email us directly at vspvalliappan@gmail.com');
-    }
+    }, 3000);
   };
 
   if (!showForm) {
@@ -139,12 +138,12 @@ function ExpertRequestForm() {
               <CheckCircle className="w-10 h-10 text-green-400" />
             </div>
           </div>
-          <h3 className="text-3xl font-bold mb-4 text-green-400">Request Submitted!</h3>
+          <h3 className="text-3xl font-bold mb-4 text-green-400">Email Client Opened!</h3>
           <p className="text-gray-300 text-lg mb-2">
-            Thank you for your request. We've received your requirements and will get back to you within one week with suitable expert recommendations.
+            Your email client should have opened with a pre-filled message. Please send it to complete your request.
           </p>
           <p className="text-gray-400 text-sm">
-            You'll receive a confirmation email shortly at <span className="text-white font-semibold">{formData.email}</span>
+            We'll get back to you within one week with suitable expert recommendations.
           </p>
         </div>
       </div>
@@ -166,37 +165,15 @@ function ExpertRequestForm() {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium mb-2">Your Name *</label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
-                errors.name ? 'border-red-500' : 'border-white/20 focus:border-purple-500'
-              }`}
-              placeholder="John Doe"
-            />
-            {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Email Address *</label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleChange('email', e.target.value)}
-              className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
-                errors.email ? 'border-red-500' : 'border-white/20 focus:border-purple-500'
-              }`}
-              placeholder="john@university.edu"
-            />
-            {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
-          </div>
+      {userData.name && (
+        <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-6">
+          <p className="text-sm text-blue-300">
+            <strong>Submitting as:</strong> {userData.name} ({userData.email})
+          </p>
         </div>
+      )}
 
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium mb-2">Thesis Topic *</label>
           <input
@@ -269,7 +246,7 @@ function ExpertRequestForm() {
             type="submit"
             className="flex-1 py-4 bg-purple-600 hover:bg-purple-500 rounded-xl font-bold text-lg transition-all shadow-lg shadow-purple-500/30 flex items-center justify-center gap-2"
           >
-            Submit Request
+            Send Request via Email
             <Send className="w-5 h-5" />
           </button>
           <button
@@ -282,7 +259,7 @@ function ExpertRequestForm() {
         </div>
 
         <p className="text-xs text-gray-500 text-center">
-          We'll review your request and respond within one week with expert recommendations
+          This will open your email client with a pre-filled message to support@nexthesis.com
         </p>
       </form>
     </div>
