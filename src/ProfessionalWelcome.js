@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, User, CheckCircle, Clock, XCircle, LogOut, Coffee, Home, Mail } from 'lucide-react';
+import { isEmailVerified } from './utils/emailVerification';
 
 const ProfessionalWelcome = () => {
   const [userData, setUserData] = useState(null);
@@ -7,6 +8,10 @@ const ProfessionalWelcome = () => {
     pending: 0,
     approved: 0,
     declined: 0
+  });
+  const [verificationStatus, setVerificationStatus] = useState({
+    emailVerified: false,
+    linkedinVerified: false
   });
 
   useEffect(() => {
@@ -17,6 +22,7 @@ const ProfessionalWelcome = () => {
         if (data.type === 'professional') {
           setUserData(data);
           loadRequestStatus(data.email);
+          checkVerificationStatus(data.email);
         } else {
           // Not a professional, redirect to home
           window.location.href = '/';
@@ -28,6 +34,34 @@ const ProfessionalWelcome = () => {
       window.location.href = '/';
     }
   }, []);
+
+  const checkVerificationStatus = async (email) => {
+    try {
+      // Check email verification
+      const emailVerified = await isEmailVerified(email);
+
+      // Check LinkedIn verification from professionals table
+      const response = await fetch(
+        `https://bpupukmduvbzyywbcngj.supabase.co/rest/v1/professionals?email=eq.${encodeURIComponent(email)}&select=linkedin_verified`,
+        {
+          headers: {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw'
+          }
+        }
+      );
+
+      const data = await response.json();
+      const linkedinVerified = data[0]?.linkedin_verified || false;
+
+      setVerificationStatus({
+        emailVerified,
+        linkedinVerified
+      });
+    } catch (e) {
+      console.error('Error checking verification status:', e);
+    }
+  };
 
   const loadRequestStatus = async (email) => {
     try {
@@ -126,30 +160,48 @@ const ProfessionalWelcome = () => {
             </p>
           </div>
 
-          {/* Verification Status Banner */}
-          <div className="bg-gradient-to-r from-yellow-600/20 to-orange-600/20 border-2 border-yellow-500/40 rounded-2xl p-6 mb-8">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                <Mail className="w-6 h-6 text-yellow-400" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-bold text-yellow-300 mb-2">Profile Verification Status</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-                    <span className="text-gray-300">⏳ <strong>Email Verification:</strong> Please check your inbox and verify your email address</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-                    <span className="text-gray-300">⏳ <strong>LinkedIn Verification:</strong> Our team is reviewing your LinkedIn profile (usually within 24 hours)</span>
-                  </div>
+          {/* Verification Status Banner - Only show if either verification is pending */}
+          {(!verificationStatus.emailVerified || !verificationStatus.linkedinVerified) && (
+            <div className="bg-gradient-to-r from-yellow-600/20 to-orange-600/20 border-2 border-yellow-500/40 rounded-2xl p-6 mb-8">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-6 h-6 text-yellow-400" />
                 </div>
-                <p className="text-sm text-yellow-400 mt-4">
-                  <strong>Note:</strong> Your profile will be visible to students once both verifications are complete. You'll receive an email notification when you're approved!
-                </p>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-yellow-300 mb-2">Profile Verification Status</h3>
+                  <div className="space-y-2">
+                    {!verificationStatus.emailVerified && (
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                        <span className="text-gray-300">⏳ <strong>Email Verification:</strong> Please check your inbox and verify your email address</span>
+                      </div>
+                    )}
+                    {verificationStatus.emailVerified && (
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="w-4 h-4 text-green-400" />
+                        <span className="text-gray-300">✅ <strong>Email Verified:</strong> Your email has been confirmed</span>
+                      </div>
+                    )}
+                    {!verificationStatus.linkedinVerified && (
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                        <span className="text-gray-300">⏳ <strong>LinkedIn Verification:</strong> Our team is reviewing your LinkedIn profile (usually within 24 hours)</span>
+                      </div>
+                    )}
+                    {verificationStatus.linkedinVerified && (
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="w-4 h-4 text-green-400" />
+                        <span className="text-gray-300">✅ <strong>LinkedIn Verified:</strong> Your profile has been approved by our team</span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-sm text-yellow-400 mt-4">
+                    <strong>Note:</strong> Your profile will be visible to students once both verifications are complete. You'll receive an email notification when you're approved!
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Request Status Cards */}
           <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -250,12 +302,12 @@ const ProfessionalWelcome = () => {
               <div className="flex-1">
                 <h3 className="text-xl font-bold mb-4">Your Profile</h3>
                 <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Name:</span>
+                  <div className="flex gap-2">
+                    <span className="text-gray-400 min-w-[60px]">Name:</span>
                     <span className="text-white font-medium">{userData.firstName} {userData.lastName}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Email:</span>
+                  <div className="flex gap-2">
+                    <span className="text-gray-400 min-w-[60px]">Email:</span>
                     <span className="text-white font-medium">{userData.email}</span>
                   </div>
                 </div>

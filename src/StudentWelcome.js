@@ -222,12 +222,12 @@ const StudentWelcome = () => {
                   <BookOpen className="w-6 h-6 text-purple-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">View Pricing Plans</h3>
+                  <h3 className="text-xl font-bold mb-2">Buy Credits</h3>
                   <p className="text-gray-400 text-sm mb-4">
-                    Explore affordable interview packages designed for students and thesis researchers
+                    Purchase interview credits to connect with verified professionals
                   </p>
                   <div className="flex items-center gap-2 text-purple-400 font-semibold text-sm">
-                    View Plans
+                    Choose Your Plan
                     <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>

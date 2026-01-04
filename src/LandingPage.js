@@ -232,25 +232,6 @@ const LandingPage = () => {
             ))}
           </div>
 
-          {/* Stats Below Steps */}
-          <div className="bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 border border-blue-500/20 rounded-2xl p-6 sm:p-8">
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4 sm:gap-8 text-sm sm:text-base">
-              <div className="flex items-center gap-2 text-gray-300">
-                <span className="text-xl">⏱️</span>
-                <span><strong className="text-white">Total time:</strong> 48-72 hours</span>
-              </div>
-              <div className="hidden md:block w-px h-8 bg-white/20"></div>
-              <div className="flex items-center gap-2 text-gray-300">
-                <span className="text-xl">📚</span>
-                <span><strong className="text-white">Most theses need:</strong> 3-5 expert interviews</span>
-              </div>
-              <div className="hidden md:block w-px h-8 bg-white/20"></div>
-              <div className="flex items-center gap-2 text-gray-300">
-                <span className="text-xl">✅</span>
-                <span><strong className="text-white">Each interview</strong> = primary source</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
