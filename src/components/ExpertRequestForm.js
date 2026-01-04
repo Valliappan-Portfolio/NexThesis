@@ -20,7 +20,7 @@ function ExpertRequestForm() {
         <div className="text-4xl mb-4">🔍</div>
         <h3 className="text-2xl font-bold mb-3">Can't Find the Right Expert?</h3>
         <p className="text-gray-400 mb-6 max-w-2xl mx-auto">
-          No worries! Tell us what you're looking for and we'll help you find the perfect professional for your thesis research.
+          Tell us what you're looking for and we'll help you find a suitable professional for your thesis research.
         </p>
         <button
           onClick={handleOpenForm}
