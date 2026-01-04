@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { ArrowRight, CheckCircle, Filter, X } from 'lucide-react';
 import InterviewRequest from './InterviewRequest';
 import VerificationGate from './components/VerificationGate';
+import ExpertRequestForm from './components/ExpertRequestForm';
 import { isEmailVerified } from './utils/emailVerification';
 
 
@@ -92,7 +93,7 @@ const BrowseExpertsPage = () => {
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg"></div>
+              <img src="/logo.png" alt="NexThesis" className="w-8 h-8" />
               <span className="text-xl font-bold">NexThesis</span>
             </a>
             <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -348,6 +349,11 @@ const BrowseExpertsPage = () => {
               </button>
             </div>
           )}
+
+          {/* Expert Request Form */}
+          <div className="mt-16">
+            <ExpertRequestForm />
+          </div>
         </div>
       </div>
 
