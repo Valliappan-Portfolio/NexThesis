@@ -3,6 +3,7 @@ import { ArrowRight, LogIn, FileText, Zap, CheckCircle, Shield } from 'lucide-re
 
 const LandingPage = () => {
   const [returningUser, setReturningUser] = useState(null);
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
 
   useEffect(() => {
     // Check if user is already registered
@@ -11,11 +12,38 @@ const LandingPage = () => {
       try {
         const userData = JSON.parse(stored);
         setReturningUser(userData);
+
+        // If professional, fetch pending requests count
+        if (userData.type === 'professional') {
+          fetchPendingRequestsCount(userData.email);
+        }
       } catch (e) {
         // Invalid data, ignore
       }
     }
   }, []);
+
+  const fetchPendingRequestsCount = async (email) => {
+    try {
+      const response = await fetch(
+        `https://bpupukmduvbzyywbcngj.supabase.co/rest/v1/interview_requests?professional_email=eq.${encodeURIComponent(email)}&select=status`,
+        {
+          headers: {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw'
+          }
+        }
+      );
+
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        const pendingCount = data.filter(r => r.status === 'pending' || r.status === 'matched').length;
+        setPendingRequestsCount(pendingCount);
+      }
+    } catch (e) {
+      console.error('Error fetching pending requests:', e);
+    }
+  };
 
   const handleReturningUserClick = () => {
     if (returningUser) {
@@ -70,9 +98,9 @@ const LandingPage = () => {
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-black/50 backdrop-blur-xl border-b border-white/10 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src="/logo.png" alt="NexThesis" className="w-7 h-7 sm:w-8 sm:h-8" />
-            <span className="text-lg sm:text-xl font-bold tracking-wide">NexThesis</span>
+          <a href="/" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity flex-shrink-0">
+            <img src="/logo.png" alt="NexThesis" className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex-shrink-0" />
+            <span className="text-base sm:text-lg md:text-xl font-bold tracking-wide whitespace-nowrap">NexThesis</span>
           </a>
           <div className="flex gap-2 sm:gap-4 items-center">
             <a href="#why" className="hidden sm:inline text-gray-400 hover:text-white transition-colors text-sm font-medium">
@@ -84,10 +112,15 @@ const LandingPage = () => {
             {returningUser && (
               <button
                 onClick={handleReturningUserClick}
-                className="px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 border border-blue-500/50 rounded-lg font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-blue-500/30"
+                className="px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 border border-blue-500/50 rounded-lg font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-blue-500/30 relative"
               >
                 <LogIn className="w-4 h-4" />
                 <span>Welcome Back</span>
+                {pendingRequestsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                    {pendingRequestsCount}
+                  </span>
+                )}
               </button>
             )}
             <a href="/browse" className="px-3 sm:px-5 py-2 sm:py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-xs sm:text-sm transition-all whitespace-nowrap">
@@ -110,8 +143,9 @@ const LandingPage = () => {
           </h1>
 
           <p className="text-lg sm:text-xl md:text-2xl text-gray-400 mb-8 sm:mb-10 max-w-3xl mx-auto leading-relaxed font-medium px-2">
-            Connect with verified professionals from leading companies<br className="hidden sm:block" />
-            Structured 30-minute sessions to elevate your academic research.
+            Connect with verified professionals from leading companies.
+            <br className="hidden sm:block" />
+            <span className="sm:inline block mt-2 sm:mt-0"> Structured 30-minute sessions to elevate your academic research.</span>
           </p>
 
           {/* CTA Buttons */}
@@ -129,27 +163,17 @@ const LandingPage = () => {
             <div className="text-gray-500 text-sm sm:text-base text-center px-4">
               No subscription. Pay per interview. Start with one session.
             </div>
-            <div className="flex flex-col items-center gap-3 mt-2">
-              {returningUser ? (
-                <button
-                  onClick={handleReturningUserClick}
-                  className="px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition-all font-semibold text-sm flex items-center gap-2"
-                >
+            {!returningUser && (
+              <div className="flex flex-col items-center gap-3 mt-2">
+                <a href="/login" className="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all font-medium text-sm flex items-center gap-2 text-gray-300 hover:text-white">
                   <LogIn className="w-4 h-4" />
-                  Welcome back, {returningUser.firstName}!
-                </button>
-              ) : (
-                <>
-                  <a href="/login" className="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all font-medium text-sm flex items-center gap-2 text-gray-300 hover:text-white">
-                    <LogIn className="w-4 h-4" />
-                    Already registered?
-                  </a>
-                  <a href="/browse" className="text-gray-400 hover:text-white transition-colors text-sm font-medium">
-                    Or browse experts without signing up →
-                  </a>
-                </>
-              )}
-            </div>
+                  Already registered?
+                </a>
+                <a href="/browse" className="text-gray-400 hover:text-white transition-colors text-sm font-medium">
+                  Or browse experts without signing up →
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>
