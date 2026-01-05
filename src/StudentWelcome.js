@@ -82,22 +82,22 @@ const StudentWelcome = () => {
       <div className="fixed top-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <nav className="fixed top-0 w-full bg-black/50 backdrop-blur-xl border-b border-white/10 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-5 flex items-center justify-between flex-wrap gap-2">
           <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src="/logo.png" alt="NexThesis" className="w-8 h-8" />
-            <span className="text-xl font-bold">NexThesis</span>
+            <img src="/logo.png" alt="NexThesis" className="w-7 h-7 sm:w-8 sm:h-8" />
+            <span className="text-lg sm:text-xl font-bold">NexThesis</span>
           </a>
-          <div className="flex gap-4 items-center">
-            <a href="/" className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-sm transition-all flex items-center gap-2">
+          <div className="flex gap-2 sm:gap-4 items-center">
+            <a href="/" className="px-3 sm:px-5 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-xs sm:text-sm transition-all flex items-center gap-1 sm:gap-2">
               <Home className="w-4 h-4" />
-              Home
+              <span className="hidden sm:inline">Home</span>
             </a>
             <button
               onClick={handleLogout}
-              className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-sm transition-all flex items-center gap-2"
+              className="px-3 sm:px-5 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-xs sm:text-sm transition-all flex items-center gap-1 sm:gap-2"
             >
               <LogOut className="w-4 h-4" />
-              Sign Out
+              <span className="hidden sm:inline">Sign Out</span>
             </button>
           </div>
         </div>

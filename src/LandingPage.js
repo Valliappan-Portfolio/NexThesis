@@ -84,10 +84,10 @@ const LandingPage = () => {
             {returningUser && (
               <button
                 onClick={handleReturningUserClick}
-                className="hidden md:flex px-4 sm:px-5 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-xs sm:text-sm transition-all items-center gap-2"
+                className="px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 border border-blue-500/50 rounded-lg font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-blue-500/30"
               >
                 <LogIn className="w-4 h-4" />
-                <span className="hidden lg:inline">Welcome Back</span>
+                <span>Welcome Back</span>
               </button>
             )}
             <a href="/browse" className="px-3 sm:px-5 py-2 sm:py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-xs sm:text-sm transition-all whitespace-nowrap">
@@ -110,7 +110,7 @@ const LandingPage = () => {
           </h1>
 
           <p className="text-lg sm:text-xl md:text-2xl text-gray-400 mb-8 sm:mb-10 max-w-3xl mx-auto leading-relaxed font-medium px-2">
-            Connect with verified professionals from leading companies.<br className="hidden sm:block" />
+            Connect with verified professionals from leading companies<br className="hidden sm:block" />
             Structured 30-minute sessions to elevate your academic research.
           </p>
 
@@ -254,7 +254,7 @@ const LandingPage = () => {
                 <div className="space-y-3 sm:space-y-5">
                   <div className="flex items-start gap-2 sm:gap-3">
                     <span className="text-red-400 text-lg sm:text-xl">❌</span>
-                    <span className="text-gray-300 text-sm sm:text-base">5% response rate</span>
+                    <span className="text-gray-300 text-sm sm:text-base">Poor response rate</span>
                   </div>
                   <div className="flex items-start gap-2 sm:gap-3">
                     <span className="text-red-400 text-lg sm:text-xl">❌</span>
@@ -332,7 +332,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-bold mb-3 text-white">Fortune 500 Credentials</h3>
               <p className="text-gray-400 leading-relaxed text-sm">
-                Interview VPs, Directors, and Consultants from Nestlé, Visa, McKinsey. Not random LinkedIn connections.
+                Interview professionals from leading companies like Nestlé, Visa, and more. Not random LinkedIn connections.
               </p>
             </div>
 
@@ -352,7 +352,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-bold mb-3 text-white">Research-Ready Sessions</h3>
               <p className="text-gray-400 leading-relaxed text-sm">
-                30 focused minutes. Recordable. Citable. Designed for academic rigor, not casual chats.
+                30 focused minutes. Recordable. Designed for academic rigor, not casual chats.
               </p>
             </div>
           </div>

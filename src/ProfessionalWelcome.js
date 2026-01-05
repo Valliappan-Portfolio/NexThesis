@@ -121,22 +121,22 @@ const ProfessionalWelcome = () => {
       <div className="fixed top-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <nav className="fixed top-0 w-full bg-black/50 backdrop-blur-xl border-b border-white/10 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-5 flex items-center justify-between flex-wrap gap-2">
           <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src="/logo.png" alt="NexThesis" className="w-8 h-8" />
-            <span className="text-xl font-bold">NexThesis</span>
+            <img src="/logo.png" alt="NexThesis" className="w-7 h-7 sm:w-8 sm:h-8" />
+            <span className="text-lg sm:text-xl font-bold">NexThesis</span>
           </a>
-          <div className="flex gap-4 items-center">
-            <a href="/" className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-sm transition-all flex items-center gap-2">
+          <div className="flex gap-2 sm:gap-4 items-center">
+            <a href="/" className="px-3 sm:px-5 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-xs sm:text-sm transition-all flex items-center gap-1 sm:gap-2">
               <Home className="w-4 h-4" />
-              Home
+              <span className="hidden sm:inline">Home</span>
             </a>
             <button
               onClick={handleLogout}
-              className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-sm transition-all flex items-center gap-2"
+              className="px-3 sm:px-5 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-xs sm:text-sm transition-all flex items-center gap-1 sm:gap-2"
             >
               <LogOut className="w-4 h-4" />
-              Sign Out
+              <span className="hidden sm:inline">Sign Out</span>
             </button>
           </div>
         </div>
@@ -252,7 +252,7 @@ const ProfessionalWelcome = () => {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div className="mb-8">
             <a
               href="/professional/dashboard"
               className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-xl border-2 border-blue-500/50 rounded-2xl p-8 hover:border-blue-500 transition-all block"
@@ -273,24 +273,6 @@ const ProfessionalWelcome = () => {
                 </div>
               </div>
             </a>
-
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <User className="w-6 h-6 text-purple-400" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">Edit Your Profile</h3>
-                  <p className="text-gray-400 text-sm mb-4">
-                    Update your bio, availability, or booking link to help students connect with you
-                  </p>
-                  <div className="flex items-center gap-2 text-purple-400 font-semibold text-sm">
-                    Coming Soon
-                    <ArrowRight className="w-4 h-4" />
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Profile Summary */}
