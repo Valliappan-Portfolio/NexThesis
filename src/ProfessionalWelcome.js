@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, User, CheckCircle, Clock, XCircle, LogOut, Coffee, Home, Mail } from 'lucide-react';
+import { ArrowRight, User, CheckCircle, Clock, XCircle, LogOut, Coffee, Home, Mail, X, Calendar } from 'lucide-react';
 import { isEmailVerified } from './utils/emailVerification';
+import { quickConfirm } from './utils/interviewAutomation';
+import { sendDeclineEmail } from './utils/resend';
 
 const ProfessionalWelcome = () => {
   const [userData, setUserData] = useState(null);
+  const [allRequests, setAllRequests] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [professionalMessage, setProfessionalMessage] = useState('');
   const [requests, setRequests] = useState({
     pending: 0,
     approved: 0,
@@ -65,11 +70,11 @@ const ProfessionalWelcome = () => {
 
   const loadRequestStatus = async (email) => {
     try {
-      console.log('Loading request stats for:', email);
+      console.log('Loading requests for:', email);
 
-      // Fetch from Supabase
+      // Fetch from Supabase - get all request data
       const response = await fetch(
-        `https://bpupukmduvbzyywbcngj.supabase.co/rest/v1/interview_requests?professional_email=eq.${encodeURIComponent(email)}&select=status`,
+        `https://bpupukmduvbzyywbcngj.supabase.co/rest/v1/interview_requests?professional_email=eq.${encodeURIComponent(email)}&order=created_at.desc`,
         {
           headers: {
             'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw',
@@ -82,6 +87,8 @@ const ProfessionalWelcome = () => {
       console.log('Fetched request data:', data);
 
       if (Array.isArray(data)) {
+        setAllRequests(data);
+
         // Calculate stats from the data
         const pending = data.filter(r => r.status === 'pending' || r.status === 'matched').length;
         const approved = data.filter(r => r.status === 'confirmed' || r.status === 'approved').length;
@@ -97,8 +104,53 @@ const ProfessionalWelcome = () => {
       }
     } catch (e) {
       console.error('Error loading request status:', e);
-      // Keep default 0s on error
+      setAllRequests([]);
       setRequests({ pending: 0, approved: 0, declined: 0 });
+    }
+  };
+
+  const handleUpdateStatus = async (requestId, newStatus) => {
+    try {
+      const request = allRequests.find(r => r.id === requestId);
+      if (!request) return;
+
+      if (newStatus === 'confirmed') {
+        await quickConfirm(requestId, professionalMessage, userData);
+        alert('Request confirmed! Meeting created and emails sent to both parties.');
+        setSelectedRequest(null);
+        setProfessionalMessage('');
+        loadRequestStatus(userData.email);
+      } else if (newStatus === 'declined') {
+        if (!professionalMessage.trim()) {
+          alert('Please provide a message explaining why you\'re declining.');
+          return;
+        }
+
+        await sendDeclineEmail(request, professionalMessage);
+
+        const response = await fetch(
+          `https://bpupukmduvbzyywbcngj.supabase.co/rest/v1/interview_requests?id=eq.${requestId}`,
+          {
+            method: 'PATCH',
+            headers: {
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: 'declined' })
+          }
+        );
+
+        if (response.ok) {
+          alert('Request declined. Email sent to student.');
+          setSelectedRequest(null);
+          setProfessionalMessage('');
+          loadRequestStatus(userData.email);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert(`Error: ${error.message}`);
     }
   };
 
@@ -251,29 +303,60 @@ const ProfessionalWelcome = () => {
             </div>
           </div>
 
-          {/* Quick Actions */}
-          <div className="mb-8">
-            <a
-              href="/professional/dashboard"
-              className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-xl border-2 border-blue-500/50 rounded-2xl p-8 hover:border-blue-500 transition-all block"
-            >
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <CheckCircle className="w-6 h-6 text-blue-400" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">Interview Requests Dashboard</h3>
-                  <p className="text-gray-400 text-sm mb-4">
-                    View and respond to interview requests from students. Confirm, propose alternatives, or decline.
-                  </p>
-                  <div className="flex items-center gap-2 text-blue-400 font-semibold text-sm">
-                    View Dashboard
-                    <ArrowRight className="w-4 h-4" />
+          {/* Pending Interview Requests */}
+          {requests.pending > 0 && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-4">Pending Requests</h2>
+              <div className="space-y-4">
+                {allRequests.filter(r => r.status === 'pending' || r.status === 'matched').map((request) => (
+                  <div
+                    key={request.id}
+                    className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all cursor-pointer"
+                    onClick={() => setSelectedRequest(request)}
+                  >
+                    <div className="flex items-start justify-between flex-wrap gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-3 flex-wrap">
+                          <User className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                          <h3 className="text-xl font-bold">{request.student_name}</h3>
+                          <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-medium">
+                            Pending
+                          </span>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex gap-2 flex-wrap">
+                            <span className="text-gray-400">University:</span>
+                            <span className="text-white">{request.student_university || 'Not specified'}</span>
+                          </div>
+                          <div className="flex gap-2 flex-wrap">
+                            <span className="text-gray-400">Thesis Topic:</span>
+                            <span className="text-white">{request.student_thesis_topic || 'Not specified'}</span>
+                          </div>
+                          <div className="flex flex-wrap gap-2 sm:gap-4 text-gray-400 text-xs sm:text-sm">
+                            <span>Plan: {request.pricing_tier_name} (€{request.price})</span>
+                            <span className="hidden sm:inline">•</span>
+                            <span>Day: {request.student_day_preference}</span>
+                            <span className="hidden sm:inline">•</span>
+                            <span>Time: {request.student_time_preference}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <Mail className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            </a>
-          </div>
+            </div>
+          )}
+
+          {/* Show message if no pending requests */}
+          {requests.pending === 0 && (
+            <div className="mb-8 bg-white/5 border border-white/10 rounded-xl p-8 text-center">
+              <Calendar className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+              <h3 className="text-xl font-bold mb-2">No Pending Requests</h3>
+              <p className="text-gray-400">Student interview requests will appear here when they send you requests</p>
+            </div>
+          )}
 
           {/* Profile Summary */}
           <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 mb-8">
@@ -299,6 +382,101 @@ const ProfessionalWelcome = () => {
 
         </div>
       </div>
+
+      {/* Request Detail Modal */}
+      {selectedRequest && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start sm:items-center justify-center p-4 sm:p-6 overflow-y-auto" onClick={() => setSelectedRequest(null)}>
+          <div className="bg-gradient-to-br from-gray-900 to-black border border-white/20 rounded-3xl max-w-2xl w-full p-6 sm:p-8 relative my-4 sm:my-0" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setSelectedRequest(null)}
+              className="absolute top-6 right-6 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <h2 className="text-3xl font-bold mb-6">Interview Request Details</h2>
+
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="text-sm text-gray-400">Student Name</label>
+                <p className="text-white font-medium">{selectedRequest.student_name}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-400">Student Email</label>
+                <p className="text-white font-medium">{selectedRequest.student_email}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-400">University</label>
+                <p className="text-white font-medium">{selectedRequest.student_university || 'Not specified'}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-400">Thesis Topic</label>
+                <p className="text-white font-medium">{selectedRequest.student_thesis_topic || 'Not specified'}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-400">Pricing Plan</label>
+                <p className="text-white font-medium">{selectedRequest.pricing_tier_name} - €{selectedRequest.price}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-400">Preferred Day</label>
+                <p className="text-white font-medium capitalize">{selectedRequest.student_day_preference}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-400">Preferred Time</label>
+                <p className="text-white font-medium capitalize">{selectedRequest.student_time_preference}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-400">Student Timezone</label>
+                <p className="text-white font-medium">{selectedRequest.student_timezone}</p>
+              </div>
+            </div>
+
+            {(selectedRequest.status === 'pending' || selectedRequest.status === 'matched') && (
+              <>
+                {/* Message textarea */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Message to Student <span className="text-gray-500">(Optional)</span>
+                  </label>
+                  <textarea
+                    value={professionalMessage}
+                    onChange={(e) => setProfessionalMessage(e.target.value)}
+                    placeholder="Add a personal message (e.g., 'Looking forward to discussing your research on AI ethics!')"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 resize-none transition-all"
+                    rows="4"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    This message will be included in the email sent to the student. Your email address will remain private.
+                  </p>
+                </div>
+
+                <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
+                  <p className="text-sm text-blue-200">
+                    💡 <strong>Note:</strong> After confirming, a Jitsi Meet video meeting will be created and both you and the student will receive confirmation emails with the meeting link.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    onClick={() => handleUpdateStatus(selectedRequest.id, 'confirmed')}
+                    className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle className="w-5 h-5" />
+                    Confirm Request
+                  </button>
+                  <button
+                    onClick={() => handleUpdateStatus(selectedRequest.id, 'declined')}
+                    className="px-6 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 text-red-400 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+                  >
+                    <X className="w-5 h-5" />
+                    Decline
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

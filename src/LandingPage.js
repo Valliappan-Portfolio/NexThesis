@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, LogIn, FileText, TrendingUp, Award, Zap, CheckCircle, Shield } from 'lucide-react';
+import { ArrowRight, LogIn, FileText, Zap, CheckCircle, Shield } from 'lucide-react';
 
 const LandingPage = () => {
   const [returningUser, setReturningUser] = useState(null);
@@ -359,52 +359,6 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* Academic Impact Section */}
-      <div className="relative py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-b from-transparent via-white/5 to-transparent">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 px-4">
-              From Interview to
-              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> A-Grade Citation</span>
-            </h2>
-            <p className="text-gray-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto px-4">
-              Industry insights your professors actually want to see. Strengthen your methodology, elevate your analysis.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            <div className="bg-gradient-to-br from-blue-600/10 to-purple-600/10 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8">
-              <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mb-4">
-                <FileText className="w-6 h-6 text-blue-400" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">Strengthen Your Methodology</h3>
-              <p className="text-gray-400 leading-relaxed">
-                Real-world data from primary sources. Demonstrates rigorous research approach your supervisor expects.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-purple-600/10 to-pink-600/10 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-8">
-              <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mb-4">
-                <TrendingUp className="w-6 h-6 text-purple-400" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">Unique Insights, Not Generic Theory</h3>
-              <p className="text-gray-400 leading-relaxed">
-                Go beyond textbook examples. Cite current practices from industry leaders in your field.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-pink-600/10 to-blue-600/10 backdrop-blur-sm border border-pink-500/20 rounded-2xl p-8">
-              <div className="w-12 h-12 bg-pink-500/20 rounded-xl flex items-center justify-center mb-4">
-                <Award className="w-6 h-6 text-pink-400" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">Academic Credibility</h3>
-              <p className="text-gray-400 leading-relaxed">
-                Verified professional credentials add weight to your citations. Fortune 500 experience speaks volumes.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
       {/* Footer */}
       <footer className="border-t border-white/10 py-12 px-6 bg-black/50 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto text-center">

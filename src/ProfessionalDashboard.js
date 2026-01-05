@@ -390,8 +390,8 @@ const ProfessionalDashboard = () => {
 
           {/* Request Detail Modal */}
           {selectedRequest && (
-            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6" onClick={() => setSelectedRequest(null)}>
-              <div className="bg-gradient-to-br from-gray-900 to-black border border-white/20 rounded-3xl max-w-2xl w-full p-8 relative" onClick={(e) => e.stopPropagation()}>
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start sm:items-center justify-center p-4 sm:p-6 overflow-y-auto" onClick={() => setSelectedRequest(null)}>
+              <div className="bg-gradient-to-br from-gray-900 to-black border border-white/20 rounded-3xl max-w-2xl w-full p-6 sm:p-8 relative my-4 sm:my-0" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => setSelectedRequest(null)}
                   className="absolute top-6 right-6 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all"
