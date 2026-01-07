@@ -43,7 +43,7 @@ const ProfessionalWelcome = () => {
   const checkVerificationStatus = async (email) => {
     try {
       // Check email verification
-      const emailVerified = await isEmailVerified(email);
+      const emailVerified = await isEmailVerified(email, 'professional');
 
       // Check LinkedIn verification from professionals table
       const response = await fetch(

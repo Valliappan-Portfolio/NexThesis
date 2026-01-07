@@ -90,38 +90,38 @@ const BrowseExpertsPage = () => {
       <div className="fixed top-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <nav className="fixed top-0 w-full bg-black/50 backdrop-blur-xl border-b border-white/10 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <img src="/logo.png" alt="NexThesis" className="w-8 h-8" />
-              <span className="text-xl font-bold">NexThesis</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-5 flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-3 sm:gap-6 flex-shrink-0">
+            <a href="/" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity">
+              <img src="/logo.png" alt="NexThesis" className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex-shrink-0" />
+              <span className="text-base sm:text-lg md:text-xl font-bold tracking-wide whitespace-nowrap">NexThesis</span>
             </a>
-            <div className="flex items-center gap-2 text-sm text-gray-400">
+            <div className="hidden sm:flex items-center gap-2 text-xs sm:text-sm text-gray-400">
               <a href="/" className="hover:text-white transition-colors">Home</a>
               <span>/</span>
               <span className="text-white">Browse Experts</span>
             </div>
           </div>
           {storedUser ? (
-  <div className="flex items-center gap-3">
-    <span className="text-gray-400 text-sm">
-      👋 {storedUser.firstName}
-    </span>
-    <button 
-      onClick={() => {
-        localStorage.removeItem('nexthesis_user');
-        window.location.reload();
-      }}
-      className="px-4 py-2 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 text-red-300 rounded-lg text-sm transition-all"
-    >
-      Logout
-    </button>
-  </div>
-) : (
-  <a href="/register/student" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-sm transition-all">
-    Get Started
-  </a>
-)}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="text-gray-400 text-xs sm:text-sm hidden md:inline">
+                👋 {storedUser.firstName}
+              </span>
+              <button
+                onClick={() => {
+                  localStorage.removeItem('nexthesis_user');
+                  window.location.reload();
+                }}
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 text-red-300 rounded-lg text-xs sm:text-sm transition-all whitespace-nowrap"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <a href="/register/student" className="px-4 sm:px-5 py-2 sm:py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-xs sm:text-sm transition-all whitespace-nowrap">
+              Get Started
+            </a>
+          )}
         </div>
       </nav>
 
