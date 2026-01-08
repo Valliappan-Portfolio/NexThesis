@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, User, CheckCircle, Clock, XCircle, LogOut, Coffee, Home, Mail, X, Calendar } from 'lucide-react';
+import { ArrowRight, User, CheckCircle, Clock, XCircle, LogOut, Coffee, Home, Mail, X, Calendar, Edit } from 'lucide-react';
 import { isEmailVerified } from './utils/emailVerification';
 import { quickConfirm } from './utils/interviewAutomation';
 import { sendDeclineEmail } from './utils/resend';
@@ -17,6 +17,14 @@ const ProfessionalWelcome = () => {
   const [verificationStatus, setVerificationStatus] = useState({
     emailVerified: false,
     linkedinVerified: false
+  });
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [profileData, setProfileData] = useState(null);
+  const [editForm, setEditForm] = useState({
+    company: '',
+    role: '',
+    bio: '',
+    years_experience: ''
   });
 
   useEffect(() => {
@@ -151,6 +159,77 @@ const ProfessionalWelcome = () => {
     } catch (error) {
       console.error('Error updating status:', error);
       alert(`Error: ${error.message}`);
+    }
+  };
+
+  const loadProfileData = async (email) => {
+    try {
+      const response = await fetch(
+        `https://bpupukmduvbzyywbcngj.supabase.co/rest/v1/professionals?email=eq.${encodeURIComponent(email)}&select=*`,
+        {
+          headers: {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw'
+          }
+        }
+      );
+      const data = await response.json();
+      if (data && data.length > 0) {
+        setProfileData(data[0]);
+        setEditForm({
+          company: data[0].company || '',
+          role: data[0].role || '',
+          bio: data[0].bio || '',
+          years_experience: data[0].years_experience || ''
+        });
+      }
+    } catch (error) {
+      console.error('Error loading profile data:', error);
+    }
+  };
+
+  const handleEditProfile = () => {
+    loadProfileData(userData.email);
+    setShowEditProfile(true);
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      const response = await fetch(
+        `https://bpupukmduvbzyywbcngj.supabase.co/rest/v1/professionals?email=eq.${encodeURIComponent(userData.email)}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw'
+          },
+          body: JSON.stringify({
+            company: editForm.company,
+            role: editForm.role,
+            bio: editForm.bio,
+            years_experience: parseInt(editForm.years_experience) || 0
+          })
+        }
+      );
+
+      if (response.ok) {
+        alert('Profile updated successfully!');
+        setShowEditProfile(false);
+        // Update localStorage
+        const updatedUserData = {
+          ...userData,
+          company: editForm.company,
+          role: editForm.role
+        };
+        localStorage.setItem('nexthesis_user', JSON.stringify(updatedUserData));
+        setUserData(updatedUserData);
+      } else {
+        throw new Error('Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      alert('Failed to update profile. Please try again.');
     }
   };
 
@@ -360,23 +439,44 @@ const ProfessionalWelcome = () => {
 
           {/* Profile Summary */}
           <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 mb-8">
-            <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                <User className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold mb-4">Your Profile</h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex gap-2">
-                    <span className="text-gray-400 min-w-[60px]">Name:</span>
-                    <span className="text-white font-medium">{userData.firstName} {userData.lastName}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="text-gray-400 min-w-[60px]">Email:</span>
-                    <span className="text-white font-medium">{userData.email}</span>
+            <div className="flex items-start justify-between gap-4 mb-6">
+              <div className="flex items-start gap-4 flex-1">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <User className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold mb-4">Your Profile</h3>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex gap-2">
+                      <span className="text-gray-400 min-w-[80px]">Name:</span>
+                      <span className="text-white font-medium">{userData.firstName} {userData.lastName}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="text-gray-400 min-w-[80px]">Email:</span>
+                      <span className="text-white font-medium">{userData.email}</span>
+                    </div>
+                    {userData.company && (
+                      <div className="flex gap-2">
+                        <span className="text-gray-400 min-w-[80px]">Company:</span>
+                        <span className="text-white font-medium">{userData.company}</span>
+                      </div>
+                    )}
+                    {userData.role && (
+                      <div className="flex gap-2">
+                        <span className="text-gray-400 min-w-[80px]">Role:</span>
+                        <span className="text-white font-medium">{userData.role}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
+              <button
+                onClick={handleEditProfile}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 flex-shrink-0"
+              >
+                <Edit className="w-4 h-4" />
+                Edit Profile
+              </button>
             </div>
           </div>
 
@@ -474,6 +574,95 @@ const ProfessionalWelcome = () => {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Edit Profile Modal */}
+      {showEditProfile && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start sm:items-center justify-center p-4 sm:p-6 overflow-y-auto" onClick={() => setShowEditProfile(false)}>
+          <div className="bg-gradient-to-br from-gray-900 to-black border border-white/20 rounded-3xl max-w-2xl w-full p-6 sm:p-8 relative my-4 sm:my-0" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setShowEditProfile(false)}
+              className="absolute top-6 right-6 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <h2 className="text-3xl font-bold mb-6">Edit Your Profile</h2>
+
+            <div className="space-y-6 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Company *</label>
+                <input
+                  type="text"
+                  value={editForm.company}
+                  onChange={(e) => setEditForm({ ...editForm, company: e.target.value })}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                  placeholder="e.g., Google"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Role/Title *</label>
+                <input
+                  type="text"
+                  value={editForm.role}
+                  onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                  placeholder="e.g., Senior Product Manager"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Years of Experience *</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="50"
+                  value={editForm.years_experience}
+                  onChange={(e) => setEditForm({ ...editForm, years_experience: e.target.value })}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                  placeholder="8"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">About You *</label>
+                <textarea
+                  value={editForm.bio}
+                  onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                  rows={6}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 resize-none transition-all"
+                  placeholder="Share your expertise, what you work on, and why students should interview you..."
+                />
+                <p className="text-xs text-gray-500 mt-2">
+                  Minimum 50 characters · {editForm.bio.length}/50
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
+              <p className="text-sm text-blue-200">
+                💡 <strong>Note:</strong> Changes to your profile will be visible to students immediately.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                onClick={handleSaveProfile}
+                className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+              >
+                <CheckCircle className="w-5 h-5" />
+                Save Changes
+              </button>
+              <button
+                onClick={() => setShowEditProfile(false)}
+                className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-semibold transition-all"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
