@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, User, BookOpen, LogOut, Sparkles, Home, Search, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowRight, User, BookOpen, LogOut, Sparkles, Home, Search, Clock, CheckCircle, XCircle, Star, X } from 'lucide-react';
+import { submitRating, hasRated } from './utils/ratingSystem';
 
 const StudentWelcome = () => {
   const [userData, setUserData] = useState(null);
-  const [, setRequests] = useState([]);
+  const [allRequests, setAllRequests] = useState([]);
   const [stats, setStats] = useState({
     pending: 0,
     confirmed: 0,
     declined: 0,
     total: 0
   });
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [selectedInterview, setSelectedInterview] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState('');
+  const [hoverRating, setHoverRating] = useState(0);
 
   useEffect(() => {
     const stored = localStorage.getItem('nexthesis_user');
@@ -45,7 +51,7 @@ const StudentWelcome = () => {
 
       const data = await response.json();
       console.log('Loaded student requests:', data);
-      setRequests(data);
+      setAllRequests(data);
 
       // Calculate stats
       const pending = data.filter(r => r.status === 'pending').length;
@@ -63,10 +69,46 @@ const StudentWelcome = () => {
     }
   };
 
+  const handleRateInterview = (interview) => {
+    setSelectedInterview(interview);
+    setRating(0);
+    setFeedback('');
+    setHoverRating(0);
+    setShowRatingModal(true);
+  };
+
+  const handleSubmitRating = async () => {
+    if (rating === 0) {
+      alert('Please select a rating');
+      return;
+    }
+
+    try {
+      await submitRating(
+        selectedInterview.id,
+        selectedInterview.professional_email,
+        userData.email,
+        rating,
+        feedback
+      );
+      alert('Thank you for your feedback!');
+      setShowRatingModal(false);
+      loadRequests(userData.email); // Reload to update UI
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+      alert('Failed to submit rating. Please try again.');
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('nexthesis_user');
     window.location.href = '/';
   };
+
+  // Get completed interviews that need rating
+  const completedInterviews = allRequests.filter(r =>
+    (r.status === 'confirmed' || r.status === 'approved') && !r.rating
+  );
 
   if (!userData) {
     return (
@@ -190,6 +232,38 @@ const StudentWelcome = () => {
             </div>
           </div>
 
+          {/* Completed Interviews - Rate Professionals */}
+          {completedInterviews.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-4">Rate Your Interviews</h2>
+              <p className="text-gray-400 mb-4">Help other students by rating your completed interviews</p>
+              <div className="space-y-4">
+                {completedInterviews.map((interview) => (
+                  <div
+                    key={interview.id}
+                    className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all"
+                  >
+                    <div className="flex items-start justify-between gap-4 flex-wrap">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold mb-2">{interview.professional_name}</h3>
+                        <p className="text-gray-400 text-sm mb-4">
+                          Interview completed - Share your experience
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleRateInterview(interview)}
+                        className="px-6 py-2 bg-yellow-600 hover:bg-yellow-500 rounded-lg font-semibold transition-all flex items-center gap-2"
+                      >
+                        <Star className="w-4 h-4" />
+                        Rate Interview
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Quick Actions */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             <a
@@ -262,6 +336,106 @@ const StudentWelcome = () => {
           </div>
         </div>
       </div>
+
+      {/* Rating Modal */}
+      {showRatingModal && selectedInterview && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start sm:items-center justify-center p-4 sm:p-6 overflow-y-auto" onClick={() => setShowRatingModal(false)}>
+          <div className="bg-gradient-to-br from-gray-900 to-black border border-white/20 rounded-3xl max-w-2xl w-full p-6 sm:p-8 relative my-4 sm:my-0" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setShowRatingModal(false)}
+              className="absolute top-6 right-6 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <h2 className="text-3xl font-bold mb-6">Rate Your Interview</h2>
+
+            <div className="mb-6">
+              <p className="text-gray-400 mb-2">Professional</p>
+              <p className="text-xl font-bold">{selectedInterview.professional_name}</p>
+            </div>
+
+            {/* Star Rating */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-3">
+                How was your interview? *
+              </label>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    className="transition-all"
+                  >
+                    <Star
+                      className={`w-12 h-12 ${
+                        star <= (hoverRating || rating)
+                          ? 'fill-yellow-400 text-yellow-400'
+                          : 'text-gray-600'
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+              <p className="text-sm text-gray-500 mt-2">
+                {rating === 0 && 'Click to rate'}
+                {rating === 1 && '⭐ Poor'}
+                {rating === 2 && '⭐⭐ Fair'}
+                {rating === 3 && '⭐⭐⭐ Good'}
+                {rating === 4 && '⭐⭐⭐⭐ Very Good'}
+                {rating === 5 && '⭐⭐⭐⭐⭐ Excellent'}
+              </p>
+            </div>
+
+            {/* Feedback */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Share your experience <span className="text-gray-500">(Optional)</span>
+              </label>
+              <textarea
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                rows={5}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50 resize-none transition-all"
+                placeholder="What did you find most valuable? Any suggestions for improvement?"
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                Your feedback helps other students and professionals improve
+              </p>
+            </div>
+
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6">
+              <p className="text-sm text-yellow-200">
+                💡 <strong>Tip:</strong> Honest feedback helps build a better community for everyone
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                onClick={handleSubmitRating}
+                disabled={rating === 0}
+                className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+                  rating === 0
+                    ? 'bg-gray-600 cursor-not-allowed'
+                    : 'bg-yellow-600 hover:bg-yellow-500'
+                }`}
+              >
+                <CheckCircle className="w-5 h-5" />
+                Submit Rating
+              </button>
+              <button
+                onClick={() => setShowRatingModal(false)}
+                className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-semibold transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
