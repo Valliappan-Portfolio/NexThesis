@@ -631,12 +631,8 @@ const ProfessionalRegistration = () => {
                           errors.timezone ? 'border-red-500' : 'border-white/20 focus:border-blue-500'
                         }`}
                       >
-                        <option value="IST" className="bg-gray-900">IST (India)</option>
-                        <option value="CET" className="bg-gray-900">CET (Central Europe)</option>
-                        <option value="EST" className="bg-gray-900">EST (US East)</option>
-                        <option value="PST" className="bg-gray-900">PST (US West)</option>
-                        <option value="GMT" className="bg-gray-900">GMT (UK)</option>
-                        <option value="SGT" className="bg-gray-900">SGT (Singapore)</option>
+                        <option value="IST" className="bg-gray-900">IST (Indian Standard Time - India)</option>
+                        <option value="CET" className="bg-gray-900">CET (Central European Time - Germany, France, etc.)</option>
                       </select>
                       {errors.timezone && <p className="text-red-400 text-xs mt-1">{errors.timezone}</p>}
                     </div>
