@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Mail, LogIn, Sparkles } from 'lucide-react';
+import { ArrowRight, Mail, LogIn, Sparkles, Home } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -110,27 +110,28 @@ const Login = () => {
       <div className="fixed top-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <nav className="fixed top-0 w-full bg-black/50 backdrop-blur-xl border-b border-white/10 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src="/logo.png" alt="NexThesis" className="w-8 h-8" />
-            <span className="text-xl font-bold">NexThesis</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-5 flex items-center justify-between">
+          <a href="/" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity flex-shrink-0">
+            <img src="/logo.png" alt="NexThesis" className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex-shrink-0" />
+            <span className="text-base sm:text-lg md:text-xl font-bold whitespace-nowrap">NexThesis</span>
           </a>
-          <div className="flex gap-4 items-center">
-            <a href="/" className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-sm transition-all">
-              Home
+          <div className="flex gap-2 sm:gap-4 items-center">
+            <a href="/" className="px-3 sm:px-5 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-xs sm:text-sm transition-all flex items-center gap-1 sm:gap-2">
+              <Home className="w-4 h-4" />
+              <span className="hidden sm:inline">Home</span>
             </a>
           </div>
         </div>
       </nav>
 
-      <div className="pt-32 pb-20 px-6 relative z-10">
+      <div className="pt-24 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 relative z-10">
         <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8 sm:mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-full mb-6">
               <LogIn className="w-4 h-4 text-blue-400" />
               <span className="text-sm font-medium text-blue-300">Welcome Back</span>
             </div>
-            <h1 className="text-5xl font-bold mb-4">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4">
               Welcome back
             </h1>
             <p className="text-gray-400 text-lg">
