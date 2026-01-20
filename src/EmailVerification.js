@@ -20,6 +20,7 @@ function EmailVerification() {
     }
 
     verifyEmail(token, type);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const verifyEmail = async (token, type) => {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, CheckCircle, Sparkles, Home } from 'lucide-react';
+// eslint-disable-next-line no-unused-vars
 import { sendStudentWelcomeEmail } from './utils/resend';
 
 const StudentRegistration = () => {

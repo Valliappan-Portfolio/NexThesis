@@ -19,6 +19,7 @@ function PaymentSuccess() {
 
     // Verify the payment session
     verifyPayment(sessionId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const verifyPayment = async (sessionId) => {

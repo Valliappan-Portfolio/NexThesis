@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Coffee, Home, Eye, X, CheckCircle, ChevronDown } from 'lucide-react';
+import { ArrowRight, Coffee, Home, Eye, X, CheckCircle } from 'lucide-react';
 
 const ProfessionalRegistration = () => {
   const [submitted, setSubmitted] = useState(false);

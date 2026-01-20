@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, User, CheckCircle, Clock, XCircle, LogOut, Coffee, Home, Mail, X, Calendar, Edit } from 'lucide-react';
+import { User, CheckCircle, Clock, XCircle, LogOut, Coffee, Home, Mail, X, Calendar, Edit } from 'lucide-react';
 import { isEmailVerified } from './utils/emailVerification';
 import { quickConfirm } from './utils/interviewAutomation';
 import { sendDeclineEmail } from './utils/resend';
@@ -19,7 +19,7 @@ const ProfessionalWelcome = () => {
     linkedinVerified: false
   });
   const [showEditProfile, setShowEditProfile] = useState(false);
-  const [profileData, setProfileData] = useState(null);
+  const [, setProfileData] = useState(null);
   const [editForm, setEditForm] = useState({
     company: '',
     role: '',

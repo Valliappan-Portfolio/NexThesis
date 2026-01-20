@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, User, BookOpen, LogOut, Sparkles, Home, Search, Clock, CheckCircle, XCircle, Star, X } from 'lucide-react';
+// eslint-disable-next-line no-unused-vars
 import { submitRating, hasRated } from './utils/ratingSystem';
 
 const StudentWelcome = () => {
