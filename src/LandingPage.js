@@ -390,7 +390,7 @@ const LandingPage = () => {
             <img src="/logo.png" alt="NexThesis" className="w-6 h-6" />
             <span className="text-xl font-bold">NexThesis</span>
           </div>
-          <p className="text-gray-500 text-sm">© 2025 NexThesis. Connecting students with industry experts.</p>
+          <p className="text-gray-500 text-sm">© 2026 NexThesis. Connecting students with industry experts.</p>
         </div>
       </footer>
     </div>

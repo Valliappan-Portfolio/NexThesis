@@ -18,6 +18,16 @@ const BuyCredits = () => {
 
   const packages = [
     {
+      id: 'test_payment',
+      name: 'Test Payment',
+      interviews: 0,
+      price: 1,
+      pricePerInterview: 1,
+      emoji: '🧪',
+      badge: 'TEST ONLY',
+      description: 'Test Stripe integration - No credits added'
+    },
+    {
       id: 'starter',
       name: 'Starter',
       interviews: 1,
@@ -274,10 +284,10 @@ const BuyCredits = () => {
             </div>
 
             <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6">
-              <h3 className="font-bold mb-3 text-purple-300">💡 Note</h3>
+              <h3 className="font-bold mb-3 text-purple-300">💡 Secure Payment</h3>
               <p className="text-sm text-gray-300 leading-relaxed">
-                This is TEST MODE. No actual payment is processed. Click "Purchase" to simulate adding credits to your account.
-                Real Stripe integration coming soon!
+                All payments are securely processed through Stripe. Your payment information is never stored on our servers.
+                Credits are added instantly after successful payment.
               </p>
             </div>
           </div>
