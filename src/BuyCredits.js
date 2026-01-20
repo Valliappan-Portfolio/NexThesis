@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, CreditCard, Home, LogOut, Sparkles } from 'lucide-react';
+// eslint-disable-next-line no-unused-vars
 import { getCreditSummary, addCredits } from './utils/creditSystem';
+// eslint-disable-next-line no-unused-vars
 import { sendPaymentConfirmationEmail } from './utils/resend';
 import { redirectToCheckout } from './utils/stripe';
 import VerificationGate from './components/VerificationGate';

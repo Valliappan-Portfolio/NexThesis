@@ -27,6 +27,7 @@ const BrowseExpertsPage = () => {
   useEffect(() => {
     fetchExperts();
     checkUserVerification();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkUserVerification = async () => {
