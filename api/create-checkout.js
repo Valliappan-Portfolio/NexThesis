@@ -45,8 +45,8 @@ export default async function handler(req, res) {
 
     const { packageName, price, interviews, studentEmail, studentName } = req.body;
 
-    // Validate input
-    if (!packageName || !price || !interviews || !studentEmail) {
+    // Validate input (interviews can be 0 for test payments)
+    if (!packageName || !price || interviews === undefined || interviews === null || !studentEmail) {
       console.error('Missing required fields');
       return res.status(400).json({
         error: 'Missing required fields: packageName, price, interviews, studentEmail'
