@@ -52,7 +52,7 @@ const PricingPage = () => {
                 <div className="text-gray-400 text-sm">Stripe integration test</div>
               </div>
               <p className="text-xs text-gray-400 text-center mb-4">No credits added - just to verify payment flow works</p>
-              <a href="/login" className="block w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black rounded-xl font-semibold text-center transition-all">
+              <a href="/buy-credits" className="block w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black rounded-xl font-semibold text-center transition-all">
                 Test Payment
               </a>
             </div>
