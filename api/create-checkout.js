@@ -64,7 +64,7 @@ export default async function handler(req, res) {
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: 'eur',
             product_data: {
               name: packageName,
               description: `${interviews} interview${interviews > 1 ? 's' : ''} with industry experts`,
