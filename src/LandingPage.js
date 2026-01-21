@@ -81,7 +81,12 @@ const LandingPage = () => {
           100% { transform: translateX(-50%); }
         }
         .animate-scroll {
-          animation: scroll 30s linear infinite;
+          animation: scroll 15s linear infinite;
+        }
+        @media (min-width: 640px) {
+          .animate-scroll {
+            animation: scroll 25s linear infinite;
+          }
         }
         .animate-scroll:hover {
           animation-play-state: paused;
@@ -143,9 +148,10 @@ const LandingPage = () => {
           </h1>
 
           <p className="text-lg sm:text-xl md:text-2xl text-gray-400 mb-8 sm:mb-10 max-w-3xl mx-auto leading-relaxed font-medium px-2">
-            Connect with verified professionals from leading companies.
-            <br className="hidden sm:block" />
-            <span className="sm:inline block mt-2 sm:mt-0"> Structured 30-minute sessions to elevate your academic research.</span>
+            Connect with verified professionals from leading companies
+          </p>
+          <p className="text-base sm:text-lg md:text-xl text-gray-500 mb-8 sm:mb-10 max-w-2xl mx-auto px-2 -mt-4 sm:-mt-6">
+            Structured 30-minute sessions to elevate your academic research
           </p>
 
           {/* CTA Buttons */}
@@ -261,7 +267,7 @@ const LandingPage = () => {
 
       {/* LinkedIn Comparison Section */}
       <div id="why" className="relative py-16 sm:py-24 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10 sm:mb-16">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 px-4">
               Why NexThesis,
@@ -270,25 +276,25 @@ const LandingPage = () => {
           </div>
 
           {/* Comparison Table - Condensed to Top 4 */}
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-8 overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl p-6 sm:p-10 mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 max-w-3xl mx-auto">
               {/* LinkedIn Column */}
-              <div>
+              <div className="text-center md:text-left">
                 <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-red-400/80">LinkedIn Cold Outreach</h3>
-                <div className="space-y-3 sm:space-y-5">
-                  <div className="flex items-start gap-2 sm:gap-3">
+                <div className="space-y-4 sm:space-y-5">
+                  <div className="flex items-center md:items-start gap-3 justify-center md:justify-start">
                     <span className="text-red-400 text-lg sm:text-xl">❌</span>
                     <span className="text-gray-300 text-sm sm:text-base">Poor response rate</span>
                   </div>
-                  <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="flex items-center md:items-start gap-3 justify-center md:justify-start">
                     <span className="text-red-400 text-lg sm:text-xl">❌</span>
                     <span className="text-gray-300 text-sm sm:text-base">Weeks of back-and-forth</span>
                   </div>
-                  <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="flex items-center md:items-start gap-3 justify-center md:justify-start">
                     <span className="text-red-400 text-lg sm:text-xl">❌</span>
                     <span className="text-gray-300 text-sm sm:text-base">Frequent no-shows</span>
                   </div>
-                  <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="flex items-center md:items-start gap-3 justify-center md:justify-start">
                     <span className="text-red-400 text-lg sm:text-xl">❌</span>
                     <span className="text-gray-300 text-sm sm:text-base">Free (but costs 40+ hours)</span>
                   </div>
@@ -296,22 +302,22 @@ const LandingPage = () => {
               </div>
 
               {/* NexThesis Column */}
-              <div>
+              <div className="text-center md:text-left">
                 <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-green-400">NexThesis</h3>
-                <div className="space-y-3 sm:space-y-5">
-                  <div className="flex items-start gap-2 sm:gap-3">
+                <div className="space-y-4 sm:space-y-5">
+                  <div className="flex items-center md:items-start gap-3 justify-center md:justify-start">
                     <span className="text-green-400 text-lg sm:text-xl">✅</span>
                     <span className="text-white font-medium text-sm sm:text-base">Guaranteed responses</span>
                   </div>
-                  <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="flex items-center md:items-start gap-3 justify-center md:justify-start">
                     <span className="text-green-400 text-lg sm:text-xl">✅</span>
                     <span className="text-white font-medium text-sm sm:text-base">Book in under 5 minutes</span>
                   </div>
-                  <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="flex items-center md:items-start gap-3 justify-center md:justify-start">
                     <span className="text-green-400 text-lg sm:text-xl">✅</span>
                     <span className="text-white font-medium text-sm sm:text-base">Show-up guaranteed</span>
                   </div>
-                  <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="flex items-center md:items-start gap-3 justify-center md:justify-start">
                     <span className="text-green-400 text-lg sm:text-xl">✅</span>
                     <span className="text-white font-medium text-sm sm:text-base">Paid (but saves you weeks)</span>
                   </div>

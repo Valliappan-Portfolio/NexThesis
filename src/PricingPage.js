@@ -40,24 +40,6 @@ const PricingPage = () => {
             </p>
           </div>
 
-          {/* Test Payment Card - Temporary */}
-          <div className="max-w-sm mx-auto mb-8">
-            <div className="bg-yellow-500/10 backdrop-blur-sm border-2 border-yellow-500/50 rounded-2xl p-6 relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-yellow-500 text-black text-xs font-bold rounded-full">
-                🧪 TEST ONLY
-              </div>
-              <div className="text-center mb-4">
-                <div className="text-sm font-bold text-yellow-300 mb-2 uppercase tracking-wider">Test Payment</div>
-                <div className="text-4xl font-bold text-white mb-1">€1</div>
-                <div className="text-gray-400 text-sm">Stripe integration test</div>
-              </div>
-              <p className="text-xs text-gray-400 text-center mb-4">No credits added - just to verify payment flow works</p>
-              <a href="/buy-credits" className="block w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black rounded-xl font-semibold text-center transition-all">
-                Test Payment
-              </a>
-            </div>
-          </div>
-
           {/* Pricing Cards - 3 Column Grid */}
           <div className="grid md:grid-cols-3 gap-8 mb-16 items-center">
             {/* CARD 1 - STARTER */}

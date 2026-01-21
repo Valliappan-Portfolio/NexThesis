@@ -357,26 +357,26 @@ const ProfessionalRegistration = () => {
       <div className="fixed top-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <nav className="fixed top-0 w-full bg-black/50 backdrop-blur-xl border-b border-white/10 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src="/logo.png" alt="NexThesis" className="w-8 h-8" />
-            <span className="text-xl font-bold">NexThesis</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-5 flex items-center justify-between">
+          <a href="/" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity flex-shrink-0">
+            <img src="/logo.png" alt="NexThesis" className="w-6 h-6 sm:w-8 sm:h-8" />
+            <span className="hidden sm:inline text-lg sm:text-xl font-bold">NexThesis</span>
           </a>
-          <div className="flex gap-4 items-center">
-            <a href="/register/student" className="text-gray-400 hover:text-white transition-colors text-sm">
+          <div className="flex gap-2 sm:gap-4 items-center">
+            <a href="/register/student" className="hidden sm:inline text-gray-400 hover:text-white transition-colors text-sm">
               Register as Student
             </a>
-            <a href="/" className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-sm transition-all flex items-center gap-2">
+            <a href="/" className="p-2 sm:px-5 sm:py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg font-semibold text-xs sm:text-sm transition-all flex items-center gap-1.5 sm:gap-2">
               <Home className="w-4 h-4" />
-              Home
+              <span className="hidden sm:inline">Home</span>
             </a>
           </div>
         </div>
       </nav>
 
-      <div className="pt-32 pb-20 px-6 relative z-10">
+      <div className="pt-24 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 relative z-10">
         <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8 sm:mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-full mb-6">
               <Coffee className="w-4 h-4 text-blue-400" />
               <span className="text-sm font-medium text-blue-300">Professional Registration</span>
@@ -589,7 +589,7 @@ const ProfessionalRegistration = () => {
 
                   <div>
                     <label className="block text-sm font-medium mb-3 text-gray-300">Preferred Time Windows * (Select all that apply)</label>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       {[
                         { value: 'morning', label: 'Morning', time: '9am-12pm' },
                         { value: 'afternoon', label: 'Afternoon', time: '12pm-5pm' },
@@ -606,7 +606,7 @@ const ProfessionalRegistration = () => {
                                 : [...formData.availableTimes, option.value];
                               handleChange('availableTimes', newTimes);
                             }}
-                            className={`px-4 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                            className={`px-3 sm:px-4 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
                               isSelected
                                 ? 'border-purple-500 bg-purple-500/20 text-white'
                                 : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:bg-white/10'
@@ -668,18 +668,18 @@ const ProfessionalRegistration = () => {
                 </div>
               )}
 
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button
                   type="button"
                   onClick={() => setShowPreview(true)}
-                  className="flex-1 py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2"
+                  className="w-full sm:flex-1 py-3 sm:py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-bold text-base sm:text-lg transition-all flex items-center justify-center gap-2"
                 >
                   <Eye className="w-5 h-5" />
                   Preview Profile
                 </button>
                 <button
                   onClick={handleSubmit}
-                  className="flex-1 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-lg transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
+                  className="w-full sm:flex-1 py-3 sm:py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-base sm:text-lg transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
                 >
                   Submit for Verification
                   <ArrowRight className="w-5 h-5" />
