@@ -187,15 +187,46 @@ const ProfessionalRegistration = () => {
           body: JSON.stringify(requestBody)
         });
 
-        const responseData = await response.json();
-        console.log('Supabase response:', responseData);
+        // Read response body once (can only be read once)
+        const contentType = response.headers.get('content-type');
+        const isJson = contentType && contentType.includes('application/json');
+        let responseText = '';
+        
+        try {
+          responseText = await response.text();
+        } catch (readError) {
+          console.warn('Could not read response body:', readError);
+        }
 
+        // Check response status
         if (!response.ok) {
-          console.error('Supabase error:', responseData);
-          const errorMessage = responseData.message || responseData.hint || 'Failed to save registration';
+          let errorMessage = 'Failed to save registration';
+          if (responseText) {
+            try {
+              const errorData = JSON.parse(responseText);
+              errorMessage = errorData.message || errorData.hint || errorMessage;
+              console.error('Supabase error:', errorData);
+            } catch (parseError) {
+              errorMessage = response.statusText || errorMessage;
+              console.error('Supabase error (non-JSON):', response.status, response.statusText);
+            }
+          } else {
+            errorMessage = response.statusText || errorMessage;
+            console.error('Supabase error (empty body):', response.status, response.statusText);
+          }
           throw new Error(errorMessage);
         }
 
+        // Response is OK - parse if JSON, otherwise just log success
+        if (isJson && responseText) {
+          try {
+            const responseData = JSON.parse(responseText);
+            console.log('Supabase response:', responseData);
+          } catch (parseError) {
+            console.warn('Could not parse response as JSON (this is OK):', parseError);
+          }
+        }
+        
         // Save professional info to browser
         localStorage.setItem('nexthesis_user', JSON.stringify({
           type: 'professional',
@@ -207,19 +238,7 @@ const ProfessionalRegistration = () => {
           expertiseDomains: formData.expertiseDomains
         }));
 
-        // Send verification email
-        try {
-          const { sendVerificationEmail } = await import('./utils/emailVerification');
-          await sendVerificationEmail(
-            formData.email,
-            `${formData.firstName} ${formData.lastName}`,
-            'professional'
-          );
-          console.log('✅ Verification email sent to professional');
-        } catch (emailError) {
-          console.error('⚠️ Failed to send verification email:', emailError);
-          // Don't block registration if email fails
-        }
+        console.log('✅ Professional registered successfully');
 
         setSubmitted(true);
       } catch (error) {

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, User, BookOpen, LogOut, Sparkles, Home, Search, Clock, CheckCircle, XCircle, Star, X } from 'lucide-react';
-// eslint-disable-next-line no-unused-vars
-import { submitRating, hasRated } from './utils/ratingSystem';
 
 const StudentWelcome = () => {
   const [userData, setUserData] = useState(null);
@@ -19,23 +17,47 @@ const StudentWelcome = () => {
   const [hoverRating, setHoverRating] = useState(0);
 
   useEffect(() => {
-    const stored = localStorage.getItem('nexthesis_user');
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        if (data.type === 'student') {
-          setUserData(data);
-          loadRequests(data.email);
-        } else {
-          // Not a student, redirect to home
+    const validateAndLoadUser = async () => {
+      const stored = localStorage.getItem('nexthesis_user');
+      if (stored) {
+        try {
+          const data = JSON.parse(stored);
+          if (data.type === 'student' && data.email) {
+            // Verify user still exists in Supabase
+            try {
+              const response = await fetch(
+                `https://bpupukmduvbzyywbcngj.supabase.co/rest/v1/students?email=eq.${encodeURIComponent(data.email)}&select=email`,
+                {
+                  headers: {
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw',
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdXB1a21kdXZienl5d2JjbmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTUzNjAsImV4cCI6MjA4MTU3MTM2MH0._EwWab7_Se-HaTWWl24J-SUBLVVzDjRIYF7q5ShqUzw'
+                  }
+                }
+              );
+              const result = await response.json();
+              if (!result || result.length === 0) {
+                // User deleted from Supabase, clear localStorage
+                localStorage.removeItem('nexthesis_user');
+                window.location.href = '/';
+                return;
+              }
+            } catch (verifyError) {
+              console.error('Error verifying user:', verifyError);
+              // Continue anyway if verification fails (network issue)
+            }
+            setUserData(data);
+            loadRequests(data.email);
+          } else {
+            window.location.href = '/';
+          }
+        } catch (e) {
           window.location.href = '/';
         }
-      } catch (e) {
+      } else {
         window.location.href = '/';
       }
-    } else {
-      window.location.href = '/';
-    }
+    };
+    validateAndLoadUser();
   }, []);
 
   const loadRequests = async (email) => {
@@ -85,20 +107,24 @@ const StudentWelcome = () => {
     }
 
     try {
-      await submitRating(
-        selectedInterview.id,
-        selectedInterview.professional_email,
-        userData.email,
-        rating,
-        feedback
-      );
-      alert('Thank you for your feedback!');
-      setShowRatingModal(false);
-      loadRequests(userData.email); // Reload to update UI
-    } catch (error) {
-      console.error('Error submitting rating:', error);
-      alert('Failed to submit rating. Please try again.');
-    }
+      try {
+        const { submitRating } = await import('./utils/ratingSystem').catch(() => ({ submitRating: null }));
+        if (submitRating) {
+          await submitRating(
+            selectedInterview.id,
+            selectedInterview.professional_email,
+            userData.email,
+            rating,
+            feedback
+          );
+        }
+        alert('Thank you for your feedback!');
+        setShowRatingModal(false);
+        loadRequests(userData.email); // Reload to update UI
+      } catch (error) {
+        console.error('Error submitting rating:', error);
+        alert('Failed to submit rating. Please try again.');
+      }
   };
 
   const handleLogout = () => {
