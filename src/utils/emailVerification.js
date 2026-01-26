@@ -90,6 +90,7 @@ export async function sendVerificationEmail(email, name, type) {
       </html>
     `;
 
+    console.log('📧 Calling email API to send verification email...');
     const response = await fetch('/api/send-email', {
       method: 'POST',
       headers: {
@@ -102,12 +103,16 @@ export async function sendVerificationEmail(email, name, type) {
       })
     });
 
+    const responseData = await response.json();
+
     if (!response.ok) {
-      throw new Error('Failed to send verification email');
+      console.error('❌ Email API error:', responseData);
+      throw new Error(responseData.error || 'Failed to send verification email');
     }
 
     console.log('✅ Verification email sent successfully');
-    return { success: true };
+    console.log('   Message ID:', responseData.messageId);
+    return { success: true, messageId: responseData.messageId };
 
   } catch (error) {
     console.error('Error sending verification email:', error);

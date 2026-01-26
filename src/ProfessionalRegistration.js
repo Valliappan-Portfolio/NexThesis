@@ -240,6 +240,20 @@ const ProfessionalRegistration = () => {
 
         console.log('✅ Professional registered successfully');
 
+        // Send verification email (non-blocking - don't fail registration if email fails)
+        try {
+          const { sendVerificationEmail } = await import('./utils/emailVerification');
+          await sendVerificationEmail(
+            formData.email,
+            `${formData.firstName} ${formData.lastName}`,
+            'professional'
+          );
+          console.log('✅ Verification email sent to professional');
+        } catch (emailError) {
+          console.error('⚠️ Failed to send verification email:', emailError);
+          // Don't block registration if email fails - user is still registered
+        }
+
         setSubmitted(true);
       } catch (error) {
         // #region agent log
