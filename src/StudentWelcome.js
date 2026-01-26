@@ -107,24 +107,23 @@ const StudentWelcome = () => {
     }
 
     try {
-      try {
-        const { submitRating } = await import('./utils/ratingSystem').catch(() => ({ submitRating: null }));
-        if (submitRating) {
-          await submitRating(
-            selectedInterview.id,
-            selectedInterview.professional_email,
-            userData.email,
-            rating,
-            feedback
-          );
-        }
-        alert('Thank you for your feedback!');
-        setShowRatingModal(false);
-        loadRequests(userData.email); // Reload to update UI
-      } catch (error) {
-        console.error('Error submitting rating:', error);
-        alert('Failed to submit rating. Please try again.');
+      const { submitRating } = await import('./utils/ratingSystem').catch(() => ({ submitRating: null }));
+      if (submitRating) {
+        await submitRating(
+          selectedInterview.id,
+          selectedInterview.professional_email,
+          userData.email,
+          rating,
+          feedback
+        );
       }
+      alert('Thank you for your feedback!');
+      setShowRatingModal(false);
+      loadRequests(userData.email); // Reload to update UI
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+      alert('Failed to submit rating. Please try again.');
+    }
   };
 
   const handleLogout = () => {
