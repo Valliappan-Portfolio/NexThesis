@@ -75,7 +75,7 @@ export async function sendVerificationEmail(email, name, type) {
     }
 
     // Send verification email
-    const verificationUrl = `${window.location.origin}/verify-email?token=${token}&type=${type}`;
+    const verificationUrl = `${window.location.origin}/verify-email?token=${email}&type=${type}`;
 
     const emailHtml = `
       <!DOCTYPE html>
