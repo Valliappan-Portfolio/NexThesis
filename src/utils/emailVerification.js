@@ -82,41 +82,49 @@ export async function sendVerificationEmail(email, name, type) {
       <html>
       <head>
         <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-          .button { display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-          .footer { text-align: center; color: #888; font-size: 12px; margin-top: 20px; }
-          .note { font-size: 12px; color: #999; margin-top: 20px; }
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #ffffff; }
+          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 12px 12px 0 0; }
+          .content { background: #f8fafc; padding: 30px; border-radius: 0 0 12px 12px; border: 1px solid #e2e8f0; }
+          .button { display: inline-block; background: #667eea; color: white; padding: 14px 30px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: 600; font-size: 16px; }
+          .footer { text-align: center; color: #64748b; font-size: 12px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+          .note { font-size: 12px; color: #64748b; margin-top: 20px; background: #f1f5f9; padding: 12px; border-radius: 8px; border-left: 4px solid #667eea; }
+          .success-text { color: #10b981; font-weight: 600; }
+          .warning-text { color: #f59e0b; font-weight: 600; }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
-            <h1>Verify Your Email</h1>
+            <h1 style="margin: 0; font-size: 24px;">Verify Your Email</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9; font-size: 14px;">Welcome to NexThesis</p>
           </div>
           <div class="content">
-            <p>Hi ${name},</p>
-            <p>Thank you for registering with NexThesis! Please verify your email address to get started.</p>
+            <p style="margin: 0 0 20px 0;">Hi <span class="success-text">${name}</span>,</p>
+            <p style="margin: 0 0 20px 0;">Thank you for registering with NexThesis! Please verify your email address to get started.</p>
 
-            <div style="text-align: center;">
+            <div style="text-align: center; margin: 30px 0;">
               <a href="${verificationUrl}" class="button">Verify Email Address</a>
             </div>
 
-            <p style="margin-top: 30px; font-size: 14px; color: #666;">
-              Or copy and paste this link into your browser:<br>
-              <a href="${verificationUrl}" style="color: #667eea;">${verificationUrl}</a>
+            <p style="margin: 20px 0 10px 0; font-size: 14px; color: #64748b;">
+              Or copy and paste this link into your browser:
             </p>
+            <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; word-break: break-all; font-family: monospace; font-size: 12px;">
+              <a href="${verificationUrl}" style="color: #667eea; text-decoration: none;">${verificationUrl}</a>
+            </div>
 
             <div class="note">
-              <p style="margin-top: 30px; font-size: 12px; color: #999;">
-                This link will expire in 24 hours. If you didn't create an account, please ignore this email.
+              <p style="margin: 0; font-size: 12px; color: #64748b;">
+                ⚠️ This link will expire in 24 hours. If you didn't create an account, please ignore this email.
               </p>
             </div>
           </div>
           <div class="footer">
-            <p>© 2024 NexThesis. All rights reserved.</p>
+            <p style="margin: 0;">© 2024 NexThesis. All rights reserved.</p>
+            <p style="margin: 8px 0 0 0; font-size: 11px; color: #94a3b8;">
+              Need help? Contact us at <a href="mailto:support@nexthesis.com" style="color: #667eea; text-decoration: none;">support@nexthesis.com</a>
+            </p>
           </div>
         </div>
       </body>
@@ -140,6 +148,13 @@ export async function sendVerificationEmail(email, name, type) {
 
     if (!response.ok) {
       console.error('❌ Email API error:', responseData);
+      
+      // Handle Resend test domain limitation
+      if (responseData.error && responseData.error.includes('testing emails to your own email address')) {
+        console.warn('⚠️ Resend test domain limitation: Can only send to verified email addresses');
+        throw new Error('Email verification temporarily unavailable. Please contact support or try again later.');
+      }
+      
       throw new Error(responseData.error || 'Failed to send verification email');
     }
 
