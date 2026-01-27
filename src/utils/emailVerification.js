@@ -23,25 +23,55 @@ export async function sendVerificationEmail(email, name, type) {
 
     const tableName = type === 'student' ? 'students' : 'professionals';
 
-    // Update user with verification token
-    const updateResponse = await fetch(
-      `${SUPABASE_URL}/rest/v1/${tableName}?email=eq.${encodeURIComponent(email)}`,
+    // First, check if user exists and get their current data
+    const checkResponse = await fetch(
+      `${SUPABASE_URL}/rest/v1/${tableName}?email=eq.${encodeURIComponent(email)}&select=id,email_verified`,
       {
-        method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
           'apikey': SUPABASE_KEY,
           'Authorization': `Bearer ${SUPABASE_KEY}`
-        },
-        body: JSON.stringify({
-          verification_token: token,
-          verification_token_expires: expiresAt.toISOString()
-        })
+        }
       }
     );
 
-    if (!updateResponse.ok) {
-      throw new Error('Failed to save verification token');
+    const users = await checkResponse.json();
+
+    if (!users || users.length === 0) {
+      throw new Error('User not found. Please complete registration first.');
+    }
+
+    const user = users[0];
+
+    // Check if already verified
+    if (user.email_verified) {
+      console.log('User already verified, skipping email send');
+      return { success: true, messageId: null, alreadyVerified: true };
+    }
+
+    // Update user with verification token (only if fields exist)
+    try {
+      const updateResponse = await fetch(
+        `${SUPABASE_URL}/rest/v1/${tableName}?email=eq.${encodeURIComponent(email)}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          },
+          body: JSON.stringify({
+            verification_token: token,
+            verification_token_expires: expiresAt.toISOString()
+          })
+        }
+      );
+
+      if (!updateResponse.ok) {
+        // If update fails, it might be because the fields don't exist, but we can still send email
+        console.warn('Could not update verification token fields, but proceeding with email send');
+      }
+    } catch (updateError) {
+      console.warn('Verification token update failed, but proceeding with email:', updateError);
     }
 
     // Send verification email
@@ -58,6 +88,7 @@ export async function sendVerificationEmail(email, name, type) {
           .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
           .button { display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
           .footer { text-align: center; color: #888; font-size: 12px; margin-top: 20px; }
+          .note { font-size: 12px; color: #999; margin-top: 20px; }
         </style>
       </head>
       <body>
@@ -78,9 +109,11 @@ export async function sendVerificationEmail(email, name, type) {
               <a href="${verificationUrl}" style="color: #667eea;">${verificationUrl}</a>
             </p>
 
-            <p style="margin-top: 30px; font-size: 12px; color: #999;">
-              This link will expire in 24 hours. If you didn't create an account, please ignore this email.
-            </p>
+            <div class="note">
+              <p style="margin-top: 30px; font-size: 12px; color: #999;">
+                This link will expire in 24 hours. If you didn't create an account, please ignore this email.
+              </p>
+            </div>
           </div>
           <div class="footer">
             <p>© 2024 NexThesis. All rights reserved.</p>

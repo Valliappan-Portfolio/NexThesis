@@ -243,15 +243,22 @@ const ProfessionalRegistration = () => {
         // Send verification email (non-blocking - don't fail registration if email fails)
         try {
           const { sendVerificationEmail } = await import('./utils/emailVerification');
-          await sendVerificationEmail(
+          const emailResult = await sendVerificationEmail(
             formData.email,
             `${formData.firstName} ${formData.lastName}`,
             'professional'
           );
-          console.log('✅ Verification email sent to professional');
+          
+          if (emailResult.alreadyVerified) {
+            console.log('✅ User already verified, no email sent');
+          } else {
+            console.log('✅ Verification email sent to professional');
+          }
         } catch (emailError) {
           console.error('⚠️ Failed to send verification email:', emailError);
           // Don't block registration if email fails - user is still registered
+          // Show a user-friendly message about the email issue
+          alert('Registration successful! However, we couldn\'t send the verification email. Please check your email settings or contact support.');
         }
 
         setSubmitted(true);
