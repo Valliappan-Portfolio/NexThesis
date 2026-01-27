@@ -47,8 +47,8 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${RESEND_API_KEY}`
       },
       body: JSON.stringify({
-        from: 'onboarding@resend.dev', // Use test domain for now - change to verified domain in production
-        reply_to: 'onboarding@resend.dev',
+        from: 'noreply@nexthesis.com', // Use verified domain
+        reply_to: 'support@nexthesis.com',
         to: [to],
         subject: subject,
         html: html
