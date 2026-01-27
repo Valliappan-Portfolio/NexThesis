@@ -158,7 +158,24 @@ export default async function handler(req, res) {
 
     if (!updateResponse.ok) {
       const error = await updateResponse.json();
+      console.error('Update response error:', error);
       throw new Error(`Failed to verify email: ${JSON.stringify(error)}`);
+    }
+
+    // Verify the update was successful by fetching the updated record
+    const verifyResponse = await fetch(
+      `${SUPABASE_URL}/rest/v1/${tableName}?email=eq.${encodeURIComponent(user.email)}&select=email_verified`,
+      {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      }
+    );
+
+    const updatedUsers = await verifyResponse.json();
+    if (!updatedUsers || updatedUsers.length === 0 || !updatedUsers[0].email_verified) {
+      throw new Error('Email verification status not updated in database');
     }
 
     console.log(`✅ Email verified for ${type}:`, user.email);
